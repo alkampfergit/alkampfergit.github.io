@@ -1,0 +1,303 @@
+<!doctype html><html lang=en dir=auto><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="Previous post on the series
+ Versioning assembly during TFS 2013 build with Powershell Scripts  Using powershell to cusotmize build is simple and easy, once you have versioning in place (previous article), if you are realizing some form of reusable library it is time to think on how to distribute it to people. One of the obvious choice is using Nuget. Luckily enough, setting up a nuget server in an azure website is just a matter of"><meta name=theme-color content="#ffcd00"><meta property="og:title" content="Automatically build and publish nuget packages during TFS Build • Codewrecks"><meta property="og:description" content="Previous post on the series
+ Versioning assembly during TFS 2013 build with Powershell Scripts  Using powershell to cusotmize build is simple and easy, once you have versioning in place (previous article), if you are realizing some form of reusable library it is time to think on how to distribute it to people. One of the obvious choice is using Nuget. Luckily enough, setting up a nuget server in an azure website is just a matter of"><meta property="og:url" content="https://www.codewrecks.com/post/old/2014/02/automatically-build-and-publish-nuget-packages-during-tfs-build/"><meta property="og:site_name" content="Codewrecks"><meta property="og:type" content="article"><meta property="article:section" content="post"><meta property="article:tag" content="TfsBuild"><meta property="article:published_time" content="2014-02-01T11:00:37+02:00"><meta property="article:modified_time" content="2014-02-01T11:00:37+02:00"><meta name=twitter:card content="summary"><meta name=generator content="Hugo 0.74.3"><title>Automatically build and publish nuget packages during TFS Build • Codewrecks</title><link rel=canonical href=https://www.codewrecks.com/post/old/2014/02/automatically-build-and-publish-nuget-packages-during-tfs-build/><link rel=icon href=/favicon.ico><link rel=stylesheet href=/assets/css/main.ab98e12b.css><style>:root{--color-accent:#ffcd00}</style><script type=application/javascript>var doNotTrack=false;if(!doNotTrack){window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;ga('create','UA-1773115-4','auto');ga('send','pageview');}</script><script async src=https://www.google-analytics.com/analytics.js></script><script src=https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js></script><script src=https://www.codewrecks.com/js/jquery-eu-cookie-law-popup.js></script><link rel=stylesheet href=https://www.codewrecks.com/css/jquery-eu-cookie-law-popup.css></head><body class="page type-post has-sidebar"><div class=site><div id=sidebar class=sidebar><a class=screen-reader-text href=#main-menu>Skip to Main Menu</a><div class=container><section class="widget widget-about sep-after"><header><div class=logo><a href=/><img src=/images/logo.png></a></div><h2 class="title site-title"><a href=/>Codewrecks</a></h2><div class=desc>Wrecks of code floating in the sea of internet</div></header></section><section class="widget widget-sidebar_menu sep-after"><nav id=sidebar-menu class="menu sidebar-menu" aria-label="Sidebar Menu"><div class=container><ul><li class=item><a href=/>Home</a></li></ul></div></nav></section><script async src=https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js></script><script async src=https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js></script><ins class=adsbygoogle style=display:block data-ad-client=ca-pub-6590055118491660 data-ad-slot=8221005908 data-ad-format=auto></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({});</script><script data-ad-client=ca-pub-6590055118491660 async src=https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js></script><section class="widget widget-taxonomy_cloud sep-after"><header><h4 class="title widget-title">Tags</h4></header><div class="container list-container"><ul class="list taxonomy-cloud"><li><a href=/tags/actions/ style=font-size:1em>Actions</a></li><li><a href=/tags/addin/ style=font-size:1.0078740157480315em>Addin</a></li><li><a href=/tags/agile/ style=font-size:1.0236220472440944em>Agile</a></li><li><a href=/tags/alm/ style=font-size:1.0629921259842519em>ALM</a></li><li><a href=/tags/aop/ style=font-size:1.0236220472440944em>Aop</a></li><li><a href=/tags/api/ style=font-size:1.0629921259842519em>API</a></li><li><a href=/tags/applicationinsights/ style=font-size:1.0236220472440944em>ApplicationInsights</a></li><li><a href=/tags/architecture/ style=font-size:1.1023622047244095em>Architecture</a></li><li><a href=/tags/architecture-castle/ style=font-size:1.0078740157480315em>Architecture Castle</a></li><li><a href=/tags/aspnet/ style=font-size:1.3622047244094488em>ASPNET</a></li><li><a href=/tags/aspnet-mvc/ style=font-size:1.031496062992126em>AspNet MVC</a></li><li><a href=/tags/azdo/ style=font-size:1.110236220472441em>AzDo</a></li><li><a href=/tags/azure/ style=font-size:1.0866141732283465em>Azure</a></li><li><a href=/tags/azure-devops/ style=font-size:1.110236220472441em>Azure Devops</a></li><li><a href=/tags/azure-pipelines/ style=font-size:1.031496062992126em>Azure Pipelines</a></li><li><a href=/tags/azuredevops/ style=font-size:1.0551181102362204em>AzureDevOps</a></li><li><a href=/tags/backup/ style=font-size:1.0078740157480315em>Backup</a></li><li><a href=/tags/blend/ style=font-size:1.0078740157480315em>Blend</a></li><li><a href=/tags/blog/ style=font-size:1.0078740157480315em>Blog</a></li><li><a href=/tags/blogging/ style=font-size:1.047244094488189em>blogging</a></li><li><a href=/tags/books/ style=font-size:1.015748031496063em>Books</a></li><li><a href=/tags/branch/ style=font-size:1.0078740157480315em>Branch</a></li><li><a href=/tags/build/ style=font-size:1.6220472440944882em>build</a></li><li><a href=/tags/c/ style=font-size:1.0078740157480315em>C</a></li><li><a href=/tags/castle/ style=font-size:1.2283464566929134em>Castle</a></li><li><a href=/tags/clickonce/ style=font-size:1.0236220472440944em>ClickOnce</a></li><li><a href=/tags/codeanalysis/ style=font-size:1.0078740157480315em>CodeAnalysis</a></li><li><a href=/tags/codespaces/ style=font-size:1.015748031496063em>Codespaces</a></li><li><a href=/tags/continuos-integration/ style=font-size:1.031496062992126em>Continuos Integration</a></li><li><a href=/tags/continuous-deployment/ style=font-size:1.0393700787401574em>Continuous Deployment</a></li><li><a href=/tags/continuous-integration/ style=font-size:1.031496062992126em>Continuous Integration</a></li><li><a href=/tags/cqrs/ style=font-size:1.0078740157480315em>CQRS</a></li><li><a href=/tags/cuit/ style=font-size:1.0078740157480315em>CUIT</a></li><li><a href=/tags/datadude/ style=font-size:1.0393700787401574em>DataDude</a></li><li><a href=/tags/datagrid/ style=font-size:1.0078740157480315em>DataGrid</a></li><li><a href=/tags/ddd/ style=font-size:1.1181102362204725em>DDD</a></li><li><a href=/tags/debugging/ style=font-size:1.0078740157480315em>Debugging</a></li><li><a href=/tags/dev11/ style=font-size:1.0078740157480315em>dev11</a></li><li><a href=/tags/developing/ style=font-size:1em>developing</a></li><li><a href=/tags/devops/ style=font-size:1.125984251968504em>DevOps</a></li><li><a href=/tags/docker/ style=font-size:1.0078740157480315em>Docker</a></li><li><a href=/tags/ef/ style=font-size:1.0078740157480315em>EF</a></li><li><a href=/tags/ef-code-first/ style=font-size:1.031496062992126em>EF Code First</a></li><li><a href=/tags/ef41/ style=font-size:1.0236220472440944em>EF41</a></li><li><a href=/tags/ef5/ style=font-size:1.015748031496063em>EF5</a></li><li><a href=/tags/enterprise-library/ style=font-size:1.0236220472440944em>Enterprise Library</a></li><li><a href=/tags/entity-framework/ style=font-size:1.094488188976378em>Entity Framework</a></li><li><a href=/tags/everydaylife/ style=font-size:1.047244094488189em>EverydayLife</a></li><li><a href=/tags/excel/ style=font-size:1.0078740157480315em>Excel</a></li><li><a href=/tags/experiences/ style=font-size:1.2440944881889764em>Experiences</a></li><li><a href=/tags/frameworks/ style=font-size:1.0629921259842519em>Frameworks</a></li><li><a href=/tags/gecko/ style=font-size:1.0078740157480315em>Gecko</a></li><li><a href=/tags/general/ style=font-size:2em>General</a></li><li><a href=/tags/git/ style=font-size:1.2125984251968505em>Git</a></li><li><a href=/tags/git-tf/ style=font-size:1.0078740157480315em>git-tf</a></li><li><a href=/tags/github/ style=font-size:1.1181102362204725em>github</a></li><li><a href=/tags/github-actions/ style=font-size:1.015748031496063em>GitHub Actions</a></li><li><a href=/tags/gitversion/ style=font-size:1em>Gitversion</a></li><li><a href=/tags/hacking/ style=font-size:1em>Hacking</a></li><li><a href=/tags/hardware/ style=font-size:1.031496062992126em>Hardware</a></li><li><a href=/tags/hql/ style=font-size:1.0078740157480315em>HQL</a></li><li><a href=/tags/html/ style=font-size:1.0078740157480315em>Html</a></li><li><a href=/tags/hugo/ style=font-size:1em>hugo</a></li><li><a href=/tags/icriteria/ style=font-size:1.0078740157480315em>ICriteria</a></li><li><a href=/tags/iis/ style=font-size:1.015748031496063em>IIS</a></li><li><a href=/tags/ioc/ style=font-size:1.015748031496063em>IoC</a></li><li><a href=/tags/javascript/ style=font-size:1.0078740157480315em>Javascript</a></li><li><a href=/tags/jquery/ style=font-size:1.047244094488189em>JQuery</a></li><li><a href=/tags/kali/ style=font-size:1.0078740157480315em>kali</a></li><li><a href=/tags/lab-management/ style=font-size:1.1023622047244095em>Lab Management</a></li><li><a href=/tags/languages/ style=font-size:1.0551181102362204em>Languages</a></li><li><a href=/tags/linq/ style=font-size:1.204724409448819em>LINQ</a></li><li><a href=/tags/linux/ style=font-size:1.047244094488189em>Linux</a></li><li><a href=/tags/log4net/ style=font-size:1.047244094488189em>log4net</a></li><li><a href=/tags/lucene/ style=font-size:1.0629921259842519em>lucene</a></li><li><a href=/tags/macro/ style=font-size:1.0236220472440944em>Macro</a></li><li><a href=/tags/masstransit/ style=font-size:1.015748031496063em>masstransit</a></li><li><a href=/tags/mef/ style=font-size:1.0236220472440944em>MEF</a></li><li><a href=/tags/metroui/ style=font-size:1.0078740157480315em>MetroUi</a></li><li><a href=/tags/microsoft-test-manager/ style=font-size:1.015748031496063em>Microsoft Test Manager</a></li><li><a href=/tags/mms/ style=font-size:1.015748031496063em>mms</a></li><li><a href=/tags/mongo/ style=font-size:1.0236220472440944em>Mongo</a></li><li><a href=/tags/mongodb/ style=font-size:1.1496062992125984em>MongoDB</a></li><li><a href=/tags/msbuild/ style=font-size:1.031496062992126em>Msbuild</a></li><li><a href=/tags/mstest/ style=font-size:1.0078740157480315em>MsTest</a></li><li><a href=/tags/mvvm/ style=font-size:1.0708661417322836em>MVVM</a></li><li><a href=/tags/nablasoft/ style=font-size:1.0236220472440944em>Nablasoft</a></li><li><a href=/tags/ndepend/ style=font-size:1.0236220472440944em>NDepend</a></li><li><a href=/tags/net/ style=font-size:1.0236220472440944em>Net</a></li><li><a href=/tags/net-core/ style=font-size:1.0078740157480315em>NET Core</a></li><li><a href=/tags/net-framework/ style=font-size:1.5118110236220472em>NET framework</a></li><li><a href=/tags/netcore/ style=font-size:1.0236220472440944em>NETCORE</a></li><li><a href=/tags/nhibernate/ style=font-size:1.5039370078740157em>Nhibernate</a></li><li><a href=/tags/nosql/ style=font-size:1.0629921259842519em>NoSql</a></li><li><a href=/tags/nsm/ style=font-size:1em>nsm</a></li><li><a href=/tags/nuget/ style=font-size:1.0393700787401574em>nuget</a></li><li><a href=/tags/nunit/ style=font-size:1.0393700787401574em>Nunit</a></li><li><a href=/tags/office/ style=font-size:1.0236220472440944em>Office</a></li><li><a href=/tags/oop/ style=font-size:1.0236220472440944em>OOP</a></li><li><a href=/tags/openxml/ style=font-size:1.0078740157480315em>OpenXml</a></li><li><a href=/tags/orm/ style=font-size:1.0236220472440944em>ORM</a></li><li><a href=/tags/performance/ style=font-size:1.0393700787401574em>Performance</a></li><li><a href=/tags/pills/ style=font-size:1.031496062992126em>Pills</a></li><li><a href=/tags/pipeline/ style=font-size:1.0393700787401574em>Pipeline</a></li><li><a href=/tags/plugin/ style=font-size:1.031496062992126em>Plugin</a></li><li><a href=/tags/power-tools/ style=font-size:1.0236220472440944em>Power Tools</a></li><li><a href=/tags/powershell/ style=font-size:1.1023622047244095em>PowerShell</a></li><li><a href=/tags/process-template/ style=font-size:1.047244094488189em>Process Template</a></li><li><a href=/tags/programming/ style=font-size:1.0866141732283465em>Programming</a></li><li><a href=/tags/python/ style=font-size:1.015748031496063em>Python</a></li><li><a href=/tags/ravendb/ style=font-size:1.031496062992126em>RavenDB</a></li><li><a href=/tags/release/ style=font-size:1.031496062992126em>release</a></li><li><a href=/tags/releasemanagement/ style=font-size:1.0551181102362204em>ReleaseManagement</a></li><li><a href=/tags/resharper/ style=font-size:1.0236220472440944em>Resharper</a></li><li><a href=/tags/rest-apis/ style=font-size:1.0236220472440944em>Rest APIs</a></li><li><a href=/tags/rhinomock/ style=font-size:1.0078740157480315em>RhinoMock</a></li><li><a href=/tags/scrum/ style=font-size:1.0078740157480315em>Scrum</a></li><li><a href=/tags/searching/ style=font-size:1.0393700787401574em>searching</a></li><li><a href=/tags/security/ style=font-size:1.2913385826771653em>security</a></li><li><a href=/tags/securityonion/ style=font-size:1em>securityonion</a></li><li><a href=/tags/shim/ style=font-size:1.0078740157480315em>shim</a></li><li><a href=/tags/signalr/ style=font-size:1.0078740157480315em>signalr</a></li><li><a href=/tags/silverlight/ style=font-size:1.015748031496063em>Silverlight</a></li><li><a href=/tags/software-architecture/ style=font-size:1.125984251968504em>Software Architecture</a></li><li><a href=/tags/solr/ style=font-size:1.0551181102362204em>Solr</a></li><li><a href=/tags/sonarcloud/ style=font-size:1.0078740157480315em>sonarcloud</a></li><li><a href=/tags/sonarqube/ style=font-size:1.0551181102362204em>sonarqube</a></li><li><a href=/tags/springnet/ style=font-size:1em>SpringNET</a></li><li><a href=/tags/sql-server/ style=font-size:1.236220472440945em>Sql Server</a></li><li><a href=/tags/sqlite/ style=font-size:1.0078740157480315em>SQLite</a></li><li><a href=/tags/ssd/ style=font-size:1.047244094488189em>SSD</a></li><li><a href=/tags/ssh/ style=font-size:1.0078740157480315em>ssh</a></li><li><a href=/tags/ssis/ style=font-size:1.0078740157480315em>SSIS</a></li><li><a href=/tags/symbols/ style=font-size:1.0078740157480315em>Symbols</a></li><li><a href=/tags/t4-generator/ style=font-size:1.0078740157480315em>T4 Generator</a></li><li><a href=/tags/team-foundation-server/ style=font-size:1.4330708661417324em>Team Foundation Server</a></li><li><a href=/tags/teamfoundationserver/ style=font-size:1.0236220472440944em>TeamFoundationServer</a></li><li><a href=/tags/terraform/ style=font-size:1em>terraform</a></li><li><a href=/tags/testing/ style=font-size:1.5590551181102361em>Testing</a></li><li><a href=/tags/testlab/ style=font-size:1.0078740157480315em>TestLab</a></li><li><a href=/tags/tf-service/ style=font-size:1.047244094488189em>TF Service</a></li><li><a href=/tags/tfs/ style=font-size:1.7716535433070866em>Tfs</a></li><li><a href=/tags/tfs-build/ style=font-size:1.236220472440945em>TFS Build</a></li><li><a href=/tags/tfs-power-tools/ style=font-size:1.0078740157480315em>Tfs Power Tools</a></li><li><a href=/tags/tfs-service/ style=font-size:1.0078740157480315em>Tfs service</a></li><li><a href=/tags/tfs11/ style=font-size:1.015748031496063em>TFS11</a></li><li><a href=/tags/tfsapi/ style=font-size:1.031496062992126em>TfsAPI</a></li><li><a href=/tags/tfsbuild/ style=font-size:1.1023622047244095em>TfsBuild</a></li><li><a href=/tags/tfvc/ style=font-size:1.0078740157480315em>TFVC</a></li><li><a href=/tags/tika/ style=font-size:1.0236220472440944em>tika</a></li><li><a href=/tags/tools/ style=font-size:1.0078740157480315em>Tools</a></li><li><a href=/tags/tools-and-library/ style=font-size:1.1338582677165354em>Tools and library</a></li><li><a href=/tags/uat/ style=font-size:1.015748031496063em>UAT</a></li><li><a href=/tags/ubuntu/ style=font-size:1.0078740157480315em>Ubuntu</a></li><li><a href=/tags/uncategorized/ style=font-size:1.3149606299212597em>Uncategorized</a></li><li><a href=/tags/unit-testing/ style=font-size:1.0551181102362204em>Unit Testing</a></li><li><a href=/tags/unittesting/ style=font-size:1em>UnitTesting</a></li><li><a href=/tags/upgrade/ style=font-size:1.0629921259842519em>Upgrade</a></li><li><a href=/tags/vcs/ style=font-size:1.015748031496063em>VCS</a></li><li><a href=/tags/virtual-machine/ style=font-size:1.031496062992126em>Virtual Machine</a></li><li><a href=/tags/visual-studio/ style=font-size:1.3070866141732282em>Visual Studio</a></li><li><a href=/tags/visual-studio-2013/ style=font-size:1.0078740157480315em>Visual Studio 2013</a></li><li><a href=/tags/visual-studio-alm/ style=font-size:1.2834645669291338em>Visual Studio ALM</a></li><li><a href=/tags/visual-studio-database-edition/ style=font-size:1.031496062992126em>Visual Studio Database Edition</a></li><li><a href=/tags/vnext/ style=font-size:1.0551181102362204em>vNext</a></li><li><a href=/tags/vs11/ style=font-size:1.031496062992126em>VS11</a></li><li><a href=/tags/vs2010/ style=font-size:1.0078740157480315em>VS2010</a></li><li><a href=/tags/vs2012/ style=font-size:1.031496062992126em>VS2012</a></li><li><a href=/tags/vsalm/ style=font-size:1.031496062992126em>VSAlm</a></li><li><a href=/tags/vsdbedition/ style=font-size:1.0078740157480315em>VSDBEdition</a></li><li><a href=/tags/vso/ style=font-size:1.0708661417322836em>VSO</a></li><li><a href=/tags/vsts/ style=font-size:1.3228346456692912em>VSTS</a></li><li><a href=/tags/vstsdbedition/ style=font-size:1.0078740157480315em>VSTSDBEdition</a></li><li><a href=/tags/wcf/ style=font-size:1.125984251968504em>Wcf</a></li><li><a href=/tags/wcf-iis7/ style=font-size:1.0078740157480315em>WCF IIS7</a></li><li><a href=/tags/web-test/ style=font-size:1.015748031496063em>Web Test</a></li><li><a href=/tags/webbrowser/ style=font-size:1.015748031496063em>WebBrowser</a></li><li><a href=/tags/windows/ style=font-size:1.0236220472440944em>windows</a></li><li><a href=/tags/winforms/ style=font-size:1.0236220472440944em>Winforms</a></li><li><a href=/tags/workflow/ style=font-size:1.0236220472440944em>workflow</a></li><li><a href=/tags/wpf/ style=font-size:1.3937007874015748em>WPF</a></li><li><a href=/tags/wsl/ style=font-size:1em>WSL</a></li><li><a href=/tags/wsl2/ style=font-size:1em>wsl2</a></li><li><a href=/tags/xaml/ style=font-size:1.015748031496063em>XAML</a></li><li><a href=/tags/yaml/ style=font-size:1.0236220472440944em>YAML</a></li><li><a href=/tags/zero-trust-security/ style=font-size:1.0078740157480315em>Zero Trust Security</a></li></ul></div></section></div><div class=sidebar-overlay></div></div><div class=main><nav id=main-menu class="menu main-menu" aria-label="Main Menu"><div class=container><a class=screen-reader-text href=#content>Skip to Content</a>
+<button id=sidebar-toggler class=sidebar-toggler aria-controls=sidebar>
+<span class=screen-reader-text>Toggle Sidebar</span>
+<span class=open><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></span><span class=close><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span></button><ul><li class=item><a href=/>Home</a></li><li class=item><a href=/categories/>Categories</a></li><li class=item><a href=/about/>About</a></li><li class=item><a href=/privacy/>Privacy</a></li></ul></div></nav><div class=header-widgets><div class=container><style>.widget-breadcrumbs li:after{content:'\2f '}</style><section class="widget widget-breadcrumbs sep-after"><nav id=breadcrumbs><ol><li><a href=/>Home</a></li><li><a href=/post/>Posts</a></li><li><span>Automatically build and publish nuget packages during TFS Build</span></li></ol></nav></section></div></div><header id=header class="header site-header"><div class="container sep-after"><div class=header-info><p class="site-title title">Codewrecks</p><p class="desc site-desc">Wrecks of code floating in the sea of internet</p></div></div></header><main id=content><article lang=en class=entry><header class="header entry-header"><div class="container sep-after"><div class=header-info><h1 class=title>Automatically build and publish nuget packages during TFS Build</h1></div><div class=entry-meta><span class=posted-on><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span class=screen-reader-text>Posted on</span>
+<time class=entry-date datetime=2014-02-01T11:00:37+02:00>2014, Feb 01</time></span>
+<span class=reading-time><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 15 15"/></svg>8 mins read</span></div></div></header><div class="container entry-content"><p>Previous post on the series</p><ul><li><a href=http://www.codewrecks.com/blog/index.php/2014/01/11/customize-tfs-2013-build-with-powershell-scripts/>Versioning assembly during TFS 2013 build with Powershell Scripts</a></li></ul><p>Using powershell to cusotmize build is simple and easy, once you have versioning in place (previous article), if you are realizing some form of reusable library it is time to <strong>think on how to distribute it to people. One of the obvious choice is using Nuget.</strong> Luckily enough, setting up a nuget server in an azure website is just a matter of</p><ol><li>Create an empty asp.net MVC project</li><li>Reference standard Nuget Server package</li><li>Change web config and add a password for publishing</li><li>Publish on an azure web sites.</li></ol><p>Et voila, you have your Nuget server up and running in really no-time on an azure web site, it is simple and quick to setup.</p><p><a href=https://www.codewrecks.com/blog/wp-content/uploads/2014/02/image3.png><a target=_blank href=https://www.codewrecks.com/blog/wp-content/uploads/2014/02/image_thumb3.png><img src=https://www.codewrecks.com/blog/wp-content/uploads/2014/02/image_thumb3.png alt=image></a></a></p><p><em><strong>Figure 1</strong></em>: <em>Nuget server running on Windows Azure Web Site</em></p><p>Now you only need to create a <strong>simple powershell file to enable automatic publishing of your libraries during TFS Build</strong>. This is really easy, first of all I started including a standard nuspec file inside the library I want to publish. This.nuspec file will contains all the details of the package and the script will only need to change the number, create nuget package and finally publish the package into your nuget server.</p><p>Here is a simple.nuspect file for a test project of a log library.</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-xml data-lang=xml><span style=color:#75715e>&lt;?xml version=&#34;1.0&#34;?&gt;</span>
+<span style=color:#f92672>&lt;package</span> <span style=color:#f92672>&gt;</span>
+  <span style=color:#f92672>&lt;metadata&gt;</span>
+    <span style=color:#f92672>&lt;id&gt;</span>LogLibrary<span style=color:#f92672>&lt;/id&gt;</span>
+    <span style=color:#f92672>&lt;version&gt;</span>1.0.0.0<span style=color:#f92672>&lt;/version&gt;</span>
+    <span style=color:#f92672>&lt;authors&gt;</span>Ricci Gian Maria<span style=color:#f92672>&lt;/authors&gt;</span>
+    <span style=color:#f92672>&lt;owners&gt;</span>Ricci Gian Maria<span style=color:#f92672>&lt;/owners&gt;</span>
+    <span style=color:#f92672>&lt;requireLicenseAcceptance&gt;</span>false<span style=color:#f92672>&lt;/requireLicenseAcceptance&gt;</span>
+    <span style=color:#f92672>&lt;description&gt;</span>Simple log library project to verify build+nuget.<span style=color:#f92672>&lt;/description&gt;</span>
+    <span style=color:#f92672>&lt;releaseNotes&gt;</span>ContinuousIntegration.<span style=color:#f92672>&lt;/releaseNotes&gt;</span>
+    <span style=color:#f92672>&lt;copyright&gt;</span>Copyright 2014 - Ricci Gian Maria<span style=color:#f92672>&lt;/copyright&gt;</span>
+    <span style=color:#f92672>&lt;tags&gt;</span>Example<span style=color:#f92672>&lt;/tags&gt;</span>
+  <span style=color:#f92672>&lt;/metadata&gt;</span>
+
+  <span style=color:#f92672>&lt;files&gt;</span>
+    <span style=color:#f92672>&lt;file</span> <span style=color:#a6e22e>src=</span><span style=color:#e6db74>&#34;LogLibrary.dll&#34;</span> <span style=color:#a6e22e>target=</span><span style=color:#e6db74>&#34;lib\NET40&#34;</span> <span style=color:#f92672>/&gt;</span>
+    <span style=color:#f92672>&lt;file</span> <span style=color:#a6e22e>src=</span><span style=color:#e6db74>&#34;LogLibrary.pdb&#34;</span> <span style=color:#a6e22e>target=</span><span style=color:#e6db74>&#34;lib\NET40&#34;</span> <span style=color:#f92672>/&gt;</span>
+  <span style=color:#f92672>&lt;/files&gt;</span>
+<span style=color:#f92672>&lt;/package&gt;</span></code></pre></td></tr></table></div></div><p>As you can verify it is a standard nuspec file and my goal is creating a powershell script that</p><ol><li><ul><li><strong>Change version including build number and day in format YYDDD where DDD is the number of day of the year</strong> *</li></ul></li><li><ul><li><strong>Execute nuget to create pack file and publish to my server</strong> *</li></ul></li></ol><p>The very first step is including nuget.exe inside my BuildScript folder and check-in everything. This will assure me that everything is needed for the build is contained in source control.</p><p><a href=https://www.codewrecks.com/blog/wp-content/uploads/2014/02/image4.png><a target=_blank href=https://www.codewrecks.com/blog/wp-content/uploads/2014/02/image_thumb4.png><img src=https://www.codewrecks.com/blog/wp-content/uploads/2014/02/image_thumb4.png alt=image></a></a></p><p><em><strong>Figure 2</strong></em>: <em>Content of the BuildScript folder</em></p><p>Now the interesting part, the powershell function that does the real work.</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">36
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">37
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">38
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">39
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">40
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">41
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">42
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">43
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">44
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">45
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">46
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">47
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">48
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">49
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">50
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">51
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">52
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">53
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">54
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">55
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">56
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">57
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">58
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">59
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">60
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">61
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">62
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">63
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">64
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">65
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">66
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">67
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">68
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">69
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">70
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">71
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">72
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">73
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">74
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">75
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">76
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">77
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">78
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">79
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">80
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">81
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">82
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">83
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">84
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">85
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">86
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">87
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">88
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">89
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">90
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">91
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">92
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">93
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">94
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">95
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">96
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">97
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:#66d9ef>function</span> Publish-NugetPackage
+{
+  <span style=color:#66d9ef>Param</span> 
+  (
+    <span style=color:#66d9ef>[string]</span>$SrcPath,
+    <span style=color:#66d9ef>[string]</span>$NugetPath,
+    <span style=color:#66d9ef>[string]</span>$PackageVersion, 
+    <span style=color:#66d9ef>[string]</span>$NugetServer,
+    <span style=color:#66d9ef>[string]</span>$NugetServerPassword
+  )
+    $buildNumber = $env:TF_BUILD_BUILDNUMBER
+    <span style=color:#66d9ef>if</span> ($buildNumber <span style=color:#f92672>-eq</span> $null)
+    {
+        $buildIncrementalNumber = 0
+    }
+    <span style=color:#66d9ef>else</span>
+    {
+        $splitted = $buildNumber.Split(<span style=color:#e6db74>&#39;.&#39;</span>)
+        $buildIncrementalNumber = $splitted[$splitted.Length - 1]
+    }
+    Write-Host <span style=color:#e6db74>&#34;Executing Publish-NugetPackage in path $SrcPath, PackageVersion is $PackageVersion&#34;</span>
+    $jdate = Get-JulianDate
+    $PackageVersion = $PackageVersion.Replace(<span style=color:#e6db74>&#34;J&#34;</span>, $jdate).Replace(<span style=color:#e6db74>&#34;B&#34;</span>, $buildIncrementalNumber)
+    Write-Host <span style=color:#e6db74>&#34;Transformed PackageVersion is $PackageVersion &#34;</span>
+    $AllNuspecFiles = Get-ChildItem $SrcPath\*.nuspec
+    <span style=color:#75715e>#Remove all previous packed packages in the directory</span>
+    $AllNugetPackageFiles = Get-ChildItem $SrcPath\*.nupkg
+    <span style=color:#66d9ef>foreach</span> ($file <span style=color:#66d9ef>in</span> $AllNugetPackageFiles)
+    { 
+        Remove-Item $file
+    }
+
+    <span style=color:#66d9ef>foreach</span> ($file <span style=color:#66d9ef>in</span> $AllNuspecFiles)
+    { 
+        Write-Host <span style=color:#e6db74>&#34;Modifying file &#34;</span> + $file.FullName
+        <span style=color:#75715e>#save the file for restore</span>
+        $backFile = $file.FullName + <span style=color:#e6db74>&#34;._ORI&#34;</span>
+        $tempFile = $file.FullName + <span style=color:#e6db74>&#34;.tmp&#34;</span>
+        Copy-Item $file.FullName $backFile -Force
+        <span style=color:#75715e>#now load all content of the original file and rewrite modified to the same file</span>
+        Get-Content $file.FullName |
+        %{$_ <span style=color:#f92672>-replace</span> <span style=color:#e6db74>&#39;&lt;version&gt;[0-9]+(\.([0-9]+|\*)){1,3}&lt;/version&gt;&#39;</span>, <span style=color:#e6db74>&#34;&lt;version&gt;$PackageVersion&lt;/version&gt;&#34;</span> } &gt; $tempFile
+        Move-Item $tempFile $file.FullName -force
+
+        <span style=color:#75715e>#Create the.nupkg from the nuspec file</span>
+        $ps = new-object System.Diagnostics.<span style=color:#66d9ef>Process</span>
+        $ps.StartInfo.Filename = <span style=color:#e6db74>&#34;$NugetPath\nuget.exe&#34;</span>
+        $ps.StartInfo.Arguments = <span style=color:#e6db74>&#34;pack </span><span style=color:#ae81ff>`&#34;</span><span style=color:#e6db74>$file</span><span style=color:#ae81ff>`&#34;</span><span style=color:#e6db74>&#34;</span>
+        $ps.StartInfo.WorkingDirectory = $file.Directory.FullName
+        $ps.StartInfo.RedirectStandardOutput = $True
+        $ps.StartInfo.RedirectStandardError = $True
+        $ps.StartInfo.UseShellExecute = $false
+        $ps.start()
+        <span style=color:#66d9ef>if</span>(!$ps.WaitForExit(30000)) 
+        {
+            $ps.Kill()
+        }
+        <span style=color:#66d9ef>[string]</span> $Out = $ps.StandardOutput.ReadToEnd();
+        <span style=color:#66d9ef>[string]</span> $ErrOut = $ps.StandardError.ReadToEnd();
+        Write-Host <span style=color:#e6db74>&#34;Nuget pack Output of commandline &#34;</span> + $ps.StartInfo.Filename + <span style=color:#e6db74>&#34; &#34;</span> + $ps.StartInfo.Arguments
+        Write-Host $Out
+        <span style=color:#66d9ef>if</span> ($ErrOut <span style=color:#f92672>-ne</span> <span style=color:#e6db74>&#34;&#34;</span>) 
+        {
+            Write-Error <span style=color:#e6db74>&#34;Nuget pack Errors&#34;</span>
+            Write-Error $ErrOut
+        }
+        <span style=color:#75715e>#Restore original file</span>
+        <span style=color:#75715e>#Move-Item $backFile $file -Force</span>
+    }
+    $AllNugetPackageFiles = Get-ChildItem $SrcPath\*.nupkg
+    <span style=color:#66d9ef>foreach</span> ($file <span style=color:#66d9ef>in</span> $AllNugetPackageFiles)
+    { 
+        <span style=color:#75715e>#Create the.nupkg from the nuspec file</span>
+        $ps = new-object System.Diagnostics.<span style=color:#66d9ef>Process</span>
+        $ps.StartInfo.Filename = <span style=color:#e6db74>&#34;$NugetPath\nuget.exe&#34;</span>
+        $ps.StartInfo.Arguments = <span style=color:#e6db74>&#34;push </span><span style=color:#ae81ff>`&#34;</span><span style=color:#e6db74>$file</span><span style=color:#ae81ff>`&#34;</span><span style=color:#e6db74> -s $NugetServer $NugetServerPassword&#34;</span>
+        $ps.StartInfo.WorkingDirectory = $file.Directory.FullName
+        $ps.StartInfo.RedirectStandardOutput = $True
+        $ps.StartInfo.RedirectStandardError = $True
+        $ps.StartInfo.UseShellExecute = $false
+        $ps.start()
+        <span style=color:#66d9ef>if</span>(!$ps.WaitForExit(30000)) 
+        {
+            $ps.Kill()
+        }
+        <span style=color:#66d9ef>[string]</span> $Out = $ps.StandardOutput.ReadToEnd();
+        <span style=color:#66d9ef>[string]</span> $ErrOut = $ps.StandardError.ReadToEnd();
+        Write-Host <span style=color:#e6db74>&#34;Nuget push Output of commandline &#34;</span> + $ps.StartInfo.Filename + <span style=color:#e6db74>&#34; &#34;</span> + $ps.StartInfo.Arguments
+        Write-Host $Out
+        <span style=color:#66d9ef>if</span> ($ErrOut <span style=color:#f92672>-ne</span> <span style=color:#e6db74>&#34;&#34;</span>) 
+        {
+            Write-Error <span style=color:#e6db74>&#34;Nuget push Errors&#34;</span>
+            Write-Error $ErrOut
+        }
+
+    }
+}</code></pre></td></tr></table></div></div><p>My standard disclaimer is: I’m not a powershell expert, so I think that probably there are gazillions of way to do a better powershell script. The function is really simple, <strong>first of all it starts doing some standard transformation of the package number (as in previous article), then it starts enumerating all.nuspec files present in bin directory of the build</strong>. <strong>For each nuspec file, it simply do a backup, then change the version number using a simple regex, finally it invoke the nuget.exe process to create the pack file</strong>. To launch an external process and have full control on the output I decided to use (since I’m a.NET programmer) the System.Diagnostic.Process class, that permits me to intercept all standard output and standard error.</p><p>After the process ends I use write-host and write-error to dump all the output to the host (it would be a better approach parsing the output and generate a better error message). <strong>Finally I invoke again nuget.exe to publish the package to my server.</strong> Once this function is in place, you can invoke with a simple script that will be scheduled to be executed AfterBuild.</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:#66d9ef>Param</span>
+(
+<span style=color:#66d9ef>[string]</span> $PackageVersion = <span style=color:#e6db74>&#34;1.0.J.B&#34;</span>,
+<span style=color:#66d9ef>[string]</span> $NugetServer = <span style=color:#e6db74>&#34;http://alkampfernuget.azurewebsites.net/&#34;</span>,
+<span style=color:#66d9ef>[string]</span> $NugetServerPassword = <span style=color:#e6db74>&#34;This_is_my_password&#34;</span>
+)
+
+Write-Host <span style=color:#e6db74>&#34;Running Pre Build Scripts&#34;</span>
+
+$scriptRoot = Split-Path -Parent -Path $MyInvocation.MyCommand.Definition
+Import-Module $scriptRoot\BuildFunctions
+
+Publish-NugetPackage $scriptRoot\..\..\bin $scriptRoot $PackageVersion $NugetServer $NugetServerPassword</code></pre></td></tr></table></div></div><p>It is based mainly by convention, the script root is the folder where the script is, and the build is configured with this workspace.</p><p><a href=https://www.codewrecks.com/blog/wp-content/uploads/2014/02/image5.png><a target=_blank href=https://www.codewrecks.com/blog/wp-content/uploads/2014/02/image_thumb5.png><img src=https://www.codewrecks.com/blog/wp-content/uploads/2014/02/image_thumb5.png alt=image></a></a></p><p><em><strong>Figure 3</strong></em>: <em>Workspace configuration</em></p><p>The above relative path maps all ScriptTest folder inside the $(SourceDir) of the agent, the script is in the BuildTools directory, so I need to get the parent folder to locate the root of the workspace and another .. to find the build base directory that contains the bin folder, where the build copy all the output. An even better situation would be using TF_BUILD_BINARIESDIRECTORY environment variable, that automatically locates that folder, but that variable is populated only during a build. If you plan to use the script only inside a TFS Build, you can safely use TF_BUILD_BINARIESDIRECTORY variable. Here is a modified example that does this</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:#66d9ef>Param</span>
+(
+<span style=color:#66d9ef>[string]</span> $PackageVersion = <span style=color:#e6db74>&#34;1.0.J.B&#34;</span>,
+<span style=color:#66d9ef>[string]</span> $NugetServer = <span style=color:#e6db74>&#34;http://alkampfernuget.azurewebsites.net/&#34;</span>,
+<span style=color:#66d9ef>[string]</span> $NugetServerPassword = <span style=color:#e6db74>&#34;This_is_my_password&#34;</span>
+)
+
+Write-Host <span style=color:#e6db74>&#34;Running Pre Build Scripts&#34;</span>
+$scriptRoot = Split-Path -Parent -Path $MyInvocation.MyCommand.Definition
+
+<span style=color:#75715e>#Remove-Module BuildFunctions</span>
+Import-Module $scriptRoot\BuildFunctions
+
+$binPath = $env:TF_BUILD_BINARIESDIRECTORY
+<span style=color:#66d9ef>if</span> ($binPath <span style=color:#f92672>-eq</span> $null)
+{Write-Host <span style=color:#e6db74>&#34;Not running in build, using relative path to identify bin location.&#34;</span>
+    $binPath = $scriptRoot + <span style=color:#e6db74>&#34;\..\..\bin&#34;</span>
+}
+
+Publish-NugetPackage $env:TF_BUILD_BINARIESDIRECTORY $scriptRoot $PackageVersion $NugetServer $NugetServerPassword</code></pre></td></tr></table></div></div><p>The above script does nothing except importing the module with the publishing function and invoke the Publish-NugetPackage function.</p><p><a href=https://www.codewrecks.com/blog/wp-content/uploads/2014/02/image6.png><a target=_blank href=https://www.codewrecks.com/blog/wp-content/uploads/2014/02/image_thumb6.png><img src=https://www.codewrecks.com/blog/wp-content/uploads/2014/02/image_thumb6.png alt=image></a></a></p><p><em><strong>Figure 4</strong></em>: <em>Invoke the script after build</em></p><p>Now everything is setup correctly, just fire a build and verify that everything is done correctly looking at write-host messages that gets collected in the detailed log of the build. Thanks to log files, you can output as much information you want to diagnose problem that can arise during the build.</p><p><a href=https://www.codewrecks.com/blog/wp-content/uploads/2014/02/image7.png><a target=_blank href=https://www.codewrecks.com/blog/wp-content/uploads/2014/02/image_thumb7.png><img src=https://www.codewrecks.com/blog/wp-content/uploads/2014/02/image_thumb7.png alt=image></a></a></p><p><strong>figure 5:</strong> <em>Verify output of powershell scriptin diagnostic build informations.</em></p><p>If the script contains some errors, powershell will write error with write-error and this information will make the build partially fails and also all the errors will be output in build details, but not in a real nice form. Since I’ve intercepted all nuget.exe error output and dump with Write-Error, a nuget.exe error message will make the build Partially Fails and you can looks at errors list to understand what happened.</p><p><a href=https://www.codewrecks.com/blog/wp-content/uploads/2014/02/image8.png><a target=_blank href=https://www.codewrecks.com/blog/wp-content/uploads/2014/02/image_thumb8.png><img src=https://www.codewrecks.com/blog/wp-content/uploads/2014/02/image_thumb8.png alt=image></a></a></p><p><em><strong>Figure 6</strong></em>: <em>How errors in powershell are displayed in build output</em></p><p>This has <strong>not a nice formatting, because each error line is treated as a single and distinct error in the build</strong>. But at least we are able to identify the root cause of the error, even if they are not really well formatted. When the build is green you will find your packages in the feed of your nuget server.</p><p><a href=https://www.codewrecks.com/blog/wp-content/uploads/2014/02/image9.png><a target=_blank href=https://www.codewrecks.com/blog/wp-content/uploads/2014/02/image_thumb9.png><img src=https://www.codewrecks.com/blog/wp-content/uploads/2014/02/image_thumb9.png alt=image></a></a></p><p><em><strong>Figure 7</strong></em>: <em>Feed of my packages pushed during the build.</em></p><p>Each good build will produce a unique version for your package, as you can verify from package console.</p><p><a href=https://www.codewrecks.com/blog/wp-content/uploads/2014/02/image10.png><a target=_blank href=https://www.codewrecks.com/blog/wp-content/uploads/2014/02/image_thumb10.png><img src=https://www.codewrecks.com/blog/wp-content/uploads/2014/02/image_thumb10.png alt=image></a></a></p><p><em><strong>Figure 8</strong></em>: <em>Listing available packages in Package Manager Console.</em></p><p>With few lines of powershell you are able to automatically publish your packages to nuget server during TFS Build.</p><p>Gian Maria.</p></div><footer class=entry-footer><div class="container sep-before"><div class=categories><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5A2 2 0 014 3H9l2 3h9a2 2 0 012 2z"/></svg><span class=screen-reader-text>Categories: </span><a class=category href=/categories/team-foundation-server/>Team Foundation Server</a></div><div class=tags><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83.0L2 12V2H12l8.59 8.59A2 2 0 0120.59 13.41z"/><line x1="7" y1="7" x2="7" y2="7"/></svg><span class=screen-reader-text>Tags: </span><a class=tag href=/tags/tfsbuild/>TfsBuild</a></div></div></footer></article><nav class=entry-nav><div class=container><div class="prev-entry sep-before">Leave comment in GitHub discussion page<a target=_blank href=https://github.com/alkampfergit/personal-blog/discussions> alkampfergit/personal-blog/discussions</a></div><div class="prev-entry sep-before"><a href=/post/old/2014/02/samsung-evo-840-500gb-vs-ocz-vertex-4-256gb/><span aria-hidden=true><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><line x1="20" y1="12" x2="4" y2="12"/><polyline points="10 18 4 12 10 6"/></svg>Previous</span>
+<span class=screen-reader-text>Previous post: </span>Samsung EVO 840 500GB VS OCZ Vertex 4 256GB</a></div><div class="next-entry sep-before"><a href=/post/old/2014/02/moving-between-different-vcs-to-team-foundation-server/><span class=screen-reader-text>Next post: </span>Moving between different VCS to Team Foundation Server<span aria-hidden=true>Next<svg class="icon" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="14 6 20 12 14 18"/></svg></span></a></div></div></nav></main><footer id=footer class=footer><div class="container sep-before"><section class="widget widget-social_menu sep-after"><nav aria-label="Social Menu"><ul><li><a href=https://github.com/alkampfergit target=_blank rel=noopener><span class=screen-reader-text>Open Github account in new tab</span><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37.0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44.0 0020 4.77 5.07 5.07.0 0019.91 1S18.73.65 16 2.48a13.38 13.38.0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07.0 005 4.77a5.44 5.44.0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37.0 009 18.13V22"/></svg></a></li><li><a href=https://twitter.com/alkampfer target=_blank rel=noopener><span class=screen-reader-text>Open Twitter account in new tab</span><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><title>Twitter icon</title><path d="M23 3a10.9 10.9.0 01-3.14 1.53 4.48 4.48.0 00-7.86 3v1A10.66 10.66.0 013 4s-4 9 5 13a11.64 11.64.0 01-7 2c9 5 20 0 20-11.5a4.5 4.5.0 00-.08-.83A7.72 7.72.0 0023 3z"/></svg></a></li><li><a href=mailto:alkampfer@nablasoft.com target=_blank rel=noopener><span class=screen-reader-text>Contact via Email</span><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><path d="M4 4h16c1.1.0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1.0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></a></li><li><a href=https://linkedin.com/in/gianmariaricci target=_blank rel=noopener><span class=screen-reader-text>Open Linkedin account in new tab</span><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg></a></li></ul></nav></section><div class=copyright><p>&copy; 2020-2021 Ricci Gian Maria</p></div></div></footer></div></div><script>window.__assets_js_src="/assets/js/"</script><script src=/assets/js/main.c3bcf2df.js></script><script>console.log("this is cookie law");$(document).euCookieLawPopup().init({cookiePolicyUrl:'/privacy/',popupPosition:'top',colorStyle:'default',compactStyle:false,popupTitle:'This website is using cookies',popupText:'By continuing I assume your permission to deploy cookies, as detailed in the Privacy &amp; Cookies Policy.',buttonContinueTitle:'Continue',buttonLearnmoreTitle:'Learn more about this site Privacy &amp; Cookies Policy',buttonLearnmoreOpenInNewWindow:true,agreementExpiresInDays:30,autoAcceptCookiePolicy:false,htmlMarkup:null});</script></body></html>
