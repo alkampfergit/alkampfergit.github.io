@@ -20,23 +20,23 @@
 </span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
 </span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
 </span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp>        <span style=color:#66d9ef>public</span> AdministrationController(
-            IMongoIndexedDocumentAccessor mida,
-            AtomicReadModelForceRebuilder atomicReadModelForceRebuilder,
-            AtomicProjectionCheckpointManager atomicProjectionCheckpointManager,
-            ICrmOmniSearchPoller crmOmniSearchPoller,
-            ICrmSecurityOmniSearchPoller crmSecurityOmniSearchPoller,
-            IProductsCatalogOmniSearchPoller productsCatalogOmniSearchPoller,
-            IUsersOmniSearchPoller usersOmniSearchPoller,
-            IGroupsOmniSearchPoller groupsOmniSearchPoller,
-            IConcurrentCheckpointTracker concurrentCheckpointTracker,
-            FeatureFlags featureFlags,
-            OmniSearchPollerFactory omniSearchPollerFactory,
-            IKernel kernel,
-            OmniSearchIndexerPipeline omniSearchIndexerPipeline,
-            AtomicReadModelDiscoveryService atomicReadModelDiscoveryService,
-            IIdentityConverter identityConverter,
-            DmsOmniSearchIndexer dmsOmniSearchIndexer)
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=color:#66d9ef>public</span> AdministrationController(
+    IMongoIndexedDocumentAccessor mida,
+    AtomicReadModelForceRebuilder atomicReadModelForceRebuilder,
+    AtomicProjectionCheckpointManager atomicProjectionCheckpointManager,
+    ICrmOmniSearchPoller crmOmniSearchPoller,
+    ICrmSecurityOmniSearchPoller crmSecurityOmniSearchPoller,
+    IProductsCatalogOmniSearchPoller productsCatalogOmniSearchPoller,
+    IUsersOmniSearchPoller usersOmniSearchPoller,
+    IGroupsOmniSearchPoller groupsOmniSearchPoller,
+    IConcurrentCheckpointTracker concurrentCheckpointTracker,
+    FeatureFlags featureFlags,
+    OmniSearchPollerFactory omniSearchPollerFactory,
+    IKernel kernel,
+    OmniSearchIndexerPipeline omniSearchIndexerPipeline,
+    AtomicReadModelDiscoveryService atomicReadModelDiscoveryService,
+    IIdentityConverter identityConverter,
+    DmsOmniSearchIndexer dmsOmniSearchIndexer)
 </code></pre></td></tr></table></div></div><p>When converting this controller to a Blazor component, the class implementing the server-side Blazor component will need to declare a <strong>property for each of these dependencies with the Inject attribute</strong>.</p><p>This is a typical example of a simple, mechanical operation that is very boring, time-consuming, and, due to its tedious nature, risks being done poorly. Thanks to chat, you can simply select constructor declaration and ask it to convert it to the desired format. The prompt in this case is very simple:</p><p>"&rdquo;&rdquo;
 I need you to convert all these dependencies in Blazor declaring a property for each interface and using the [Inject] Attribute
 "&rdquo;&rdquo;</p><p>The result, in very little time, is exactly what we expected.<div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
