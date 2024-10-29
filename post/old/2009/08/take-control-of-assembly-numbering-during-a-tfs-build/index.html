@@ -1,406 +1,403 @@
-<!doctype html><html lang=en dir=auto><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="One of the most important stuff in a project build, is the ability to mark the assemblies with unique numbers that permits us to reproduce the build. Tfs does not have a standard way of doing this, but with a couple of MsBuild actions it is really simple to overcome this limitation. This is a good example that shows how you can extend build script to do complex task.
-First of all I want to change only AssemblyFileVersion and not the AssemblyVersion, in this way all builds are compatible until someone manually changes AssemblyVersion."><meta name=theme-color content="#ffcd00"><meta property="og:title" content="Take control of assembly numbering during a tfs build • Codewrecks"><meta property="og:description" content="One of the most important stuff in a project build, is the ability to mark the assemblies with unique numbers that permits us to reproduce the build. Tfs does not have a standard way of doing this, but with a couple of MsBuild actions it is really simple to overcome this limitation. This is a good example that shows how you can extend build script to do complex task.
-First of all I want to change only AssemblyFileVersion and not the AssemblyVersion, in this way all builds are compatible until someone manually changes AssemblyVersion."><meta property="og:url" content="https://www.codewrecks.com/post/old/2009/08/take-control-of-assembly-numbering-during-a-tfs-build/"><meta property="og:site_name" content="Codewrecks"><meta property="og:type" content="article"><meta property="article:section" content="post"><meta property="article:tag" content="Msbuild"><meta property="article:tag" content="TeamFoundationServer"><meta property="article:tag" content="TfsBuild"><meta property="article:published_time" content="2009-08-21T06:00:37+02:00"><meta property="article:modified_time" content="2009-08-21T06:00:37+02:00"><meta name=twitter:card content="summary"><meta name=generator content="Hugo 0.74.3"><title>Take control of assembly numbering during a tfs build • Codewrecks</title><link rel=canonical href=https://www.codewrecks.com/post/old/2009/08/take-control-of-assembly-numbering-during-a-tfs-build/><link rel=icon href=/favicon.ico><link rel=stylesheet href=/assets/css/main.ab98e12b.css><style>:root{--color-accent:#ffcd00}</style><script src=https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js></script><script src=https://www.codewrecks.com/js/jquery-eu-cookie-law-popup.js></script><link rel=stylesheet href=https://www.codewrecks.com/css/jquery-eu-cookie-law-popup.css><script async src="https://www.googletagmanager.com/gtag/js?id=G-JNG3CSWEQT"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
-gtag('js',new Date());gtag('config','G-JNG3CSWEQT');</script></head><body class="page type-post has-sidebar"><div class=site><div id=sidebar class=sidebar><a class=screen-reader-text href=#main-menu>Skip to Main Menu</a><div class=container><section class="widget widget-about sep-after"><header><div class=logo><a href=/><img src=/images/logo.png></a></div><h2 class="title site-title"><a href=/>Codewrecks</a></h2><div class=desc>Wrecks of code floating in the sea of internet</div></header></section><section class="widget widget-sidebar_menu sep-after"><nav id=sidebar-menu class="menu sidebar-menu" aria-label="Sidebar Menu"><div class=container><ul><li class=item><a href=/>Home</a></li></ul></div></nav></section><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6590055118491660" crossorigin=anonymous></script><section class="widget widget-taxonomy_cloud sep-after"><header><h4 class="title widget-title">Tags</h4></header><div class="container list-container"><ul class="list taxonomy-cloud"><li><a href=/tags/actions/ style=font-size:1.0078740157480315em>Actions</a></li><li><a href=/tags/addin/ style=font-size:1.0078740157480315em>Addin</a></li><li><a href=/tags/agile/ style=font-size:1.0236220472440944em>Agile</a></li><li><a href=/tags/ai/ style=font-size:1.015748031496063em>AI</a></li><li><a href=/tags/alm/ style=font-size:1.0629921259842519em>ALM</a></li><li><a href=/tags/aop/ style=font-size:1.0236220472440944em>Aop</a></li><li><a href=/tags/api/ style=font-size:1.1181102362204725em>Api</a></li><li><a href=/tags/applicationinsights/ style=font-size:1.0236220472440944em>ApplicationInsights</a></li><li><a href=/tags/architecture/ style=font-size:1.1023622047244095em>Architecture</a></li><li><a href=/tags/architecture-castle/ style=font-size:1.0078740157480315em>Architecture Castle</a></li><li><a href=/tags/aspnet/ style=font-size:1.3700787401574803em>ASPNET</a></li><li><a href=/tags/aspnet-mvc/ style=font-size:1.031496062992126em>AspNet MVC</a></li><li><a href=/tags/automation/ style=font-size:1.0078740157480315em>Automation</a></li><li><a href=/tags/azdo/ style=font-size:1.2125984251968505em>AzDo</a></li><li><a href=/tags/azure/ style=font-size:1.0866141732283465em>Azure</a></li><li><a href=/tags/azure-devops/ style=font-size:1.110236220472441em>Azure Devops</a></li><li><a href=/tags/azure-pipelines/ style=font-size:1.031496062992126em>Azure Pipelines</a></li><li><a href=/tags/azuredevops/ style=font-size:1.1023622047244095em>AzureDevOps</a></li><li><a href=/tags/backup/ style=font-size:1.0078740157480315em>Backup</a></li><li><a href=/tags/blend/ style=font-size:1.0078740157480315em>Blend</a></li><li><a href=/tags/blog/ style=font-size:1.0078740157480315em>Blog</a></li><li><a href=/tags/blogging/ style=font-size:1.0551181102362204em>blogging</a></li><li><a href=/tags/books/ style=font-size:1.015748031496063em>Books</a></li><li><a href=/tags/branch/ style=font-size:1em>Branch</a></li><li><a href=/tags/build/ style=font-size:1.5984251968503937em>build</a></li><li><a href=/tags/c/ style=font-size:1.0078740157480315em>C</a></li><li><a href=/tags/castle/ style=font-size:1.236220472440945em>castle</a></li><li><a href=/tags/chatgpt/ style=font-size:1.0078740157480315em>ChatGPT</a></li><li><a href=/tags/clickonce/ style=font-size:1.0236220472440944em>ClickOnce</a></li><li><a href=/tags/codeanalysis/ style=font-size:1.0078740157480315em>CodeAnalysis</a></li><li><a href=/tags/codespaces/ style=font-size:1.031496062992126em>Codespaces</a></li><li><a href=/tags/continuos-integration/ style=font-size:1.031496062992126em>Continuos Integration</a></li><li><a href=/tags/continuous-deployment/ style=font-size:1.0393700787401574em>Continuous Deployment</a></li><li><a href=/tags/continuous-integration/ style=font-size:1.0866141732283465em>Continuous Integration</a></li><li><a href=/tags/continuousdeployment/ style=font-size:1.0551181102362204em>ContinuousDeployment</a></li><li><a href=/tags/copilot/ style=font-size:1.015748031496063em>Copilot</a></li><li><a href=/tags/cqrs/ style=font-size:1.0078740157480315em>CQRS</a></li><li><a href=/tags/datadude/ style=font-size:1.0393700787401574em>DataDude</a></li><li><a href=/tags/datagrid/ style=font-size:1.0078740157480315em>DataGrid</a></li><li><a href=/tags/ddd/ style=font-size:1.1181102362204725em>DDD</a></li><li><a href=/tags/debugging/ style=font-size:1.0078740157480315em>Debugging</a></li><li><a href=/tags/developing/ style=font-size:1em>developing</a></li><li><a href=/tags/devops/ style=font-size:1.1181102362204725em>DevOps</a></li><li><a href=/tags/docker/ style=font-size:1.0078740157480315em>Docker</a></li><li><a href=/tags/dotnet/ style=font-size:1em>dotnet</a></li><li><a href=/tags/ef/ style=font-size:1.0078740157480315em>EF</a></li><li><a href=/tags/ef-code-first/ style=font-size:1.031496062992126em>EF Code First</a></li><li><a href=/tags/ef41/ style=font-size:1.0236220472440944em>EF41</a></li><li><a href=/tags/ef5/ style=font-size:1.015748031496063em>EF5</a></li><li><a href=/tags/enterprise-library/ style=font-size:1.0236220472440944em>Enterprise Library</a></li><li><a href=/tags/entity-framework/ style=font-size:1.094488188976378em>Entity Framework</a></li><li><a href=/tags/everydaylife/ style=font-size:1.047244094488189em>EverydayLife</a></li><li><a href=/tags/excel/ style=font-size:1.0078740157480315em>Excel</a></li><li><a href=/tags/experiences/ style=font-size:1.2440944881889764em>Experiences</a></li><li><a href=/tags/frameworks/ style=font-size:1.0629921259842519em>Frameworks</a></li><li><a href=/tags/general/ style=font-size:2em>General</a></li><li><a href=/tags/git/ style=font-size:1.2283464566929134em>Git</a></li><li><a href=/tags/git-tf/ style=font-size:1.0078740157480315em>git-tf</a></li><li><a href=/tags/github/ style=font-size:1.236220472440945em>GitHub</a></li><li><a href=/tags/github-actions/ style=font-size:1.0236220472440944em>GitHub Actions</a></li><li><a href=/tags/gpt4/ style=font-size:1em>GPT4</a></li><li><a href=/tags/hacking/ style=font-size:1em>Hacking</a></li><li><a href=/tags/hardware/ style=font-size:1.031496062992126em>Hardware</a></li><li><a href=/tags/homelab/ style=font-size:1em>HomeLab</a></li><li><a href=/tags/hql/ style=font-size:1.0078740157480315em>HQL</a></li><li><a href=/tags/html/ style=font-size:1.0078740157480315em>Html</a></li><li><a href=/tags/hugo/ style=font-size:1em>hugo</a></li><li><a href=/tags/icriteria/ style=font-size:1.0078740157480315em>ICriteria</a></li><li><a href=/tags/iis/ style=font-size:1.015748031496063em>IIS</a></li><li><a href=/tags/ioc/ style=font-size:1.015748031496063em>IoC</a></li><li><a href=/tags/javascript/ style=font-size:1.0078740157480315em>Javascript</a></li><li><a href=/tags/jquery/ style=font-size:1.047244094488189em>JQuery</a></li><li><a href=/tags/lab-management/ style=font-size:1.1023622047244095em>Lab Management</a></li><li><a href=/tags/languages/ style=font-size:1.0551181102362204em>Languages</a></li><li><a href=/tags/linq/ style=font-size:1.204724409448819em>LINQ</a></li><li><a href=/tags/linux/ style=font-size:1.0551181102362204em>Linux</a></li><li><a href=/tags/log4net/ style=font-size:1.047244094488189em>log4net</a></li><li><a href=/tags/lucene/ style=font-size:1.0629921259842519em>lucene</a></li><li><a href=/tags/macro/ style=font-size:1.0236220472440944em>Macro</a></li><li><a href=/tags/masstransit/ style=font-size:1.015748031496063em>masstransit</a></li><li><a href=/tags/mef/ style=font-size:1.0236220472440944em>MEF</a></li><li><a href=/tags/metroui/ style=font-size:1.0078740157480315em>MetroUi</a></li><li><a href=/tags/microsoft-test-manager/ style=font-size:1.015748031496063em>Microsoft Test Manager</a></li><li><a href=/tags/mms/ style=font-size:1.015748031496063em>mms</a></li><li><a href=/tags/mongo/ style=font-size:1.0236220472440944em>Mongo</a></li><li><a href=/tags/mongodb/ style=font-size:1.1574803149606299em>MongoDB</a></li><li><a href=/tags/msbuild/ style=font-size:1.031496062992126em>Msbuild</a></li><li><a href=/tags/mstest/ style=font-size:1.0078740157480315em>MsTest</a></li><li><a href=/tags/mvvm/ style=font-size:1.0708661417322836em>MVVM</a></li><li><a href=/tags/nablasoft/ style=font-size:1.0236220472440944em>Nablasoft</a></li><li><a href=/tags/ndepend/ style=font-size:1.0236220472440944em>NDepend</a></li><li><a href=/tags/net/ style=font-size:1.0236220472440944em>Net</a></li><li><a href=/tags/net-core/ style=font-size:1.0078740157480315em>NET Core</a></li><li><a href=/tags/net-framework/ style=font-size:1.5118110236220472em>NET framework</a></li><li><a href=/tags/netcore/ style=font-size:1.0236220472440944em>NETCORE</a></li><li><a href=/tags/nhibernate/ style=font-size:1.5039370078740157em>Nhibernate</a></li><li><a href=/tags/nosql/ style=font-size:1.0629921259842519em>NoSql</a></li><li><a href=/tags/nsm/ style=font-size:1em>nsm</a></li><li><a href=/tags/nuget/ style=font-size:1.0393700787401574em>nuget</a></li><li><a href=/tags/nunit/ style=font-size:1.0393700787401574em>Nunit</a></li><li><a href=/tags/office/ style=font-size:1.0236220472440944em>Office</a></li><li><a href=/tags/oidc/ style=font-size:1em>OIDC</a></li><li><a href=/tags/oop/ style=font-size:1.0236220472440944em>OOP</a></li><li><a href=/tags/openxml/ style=font-size:1.0078740157480315em>OpenXml</a></li><li><a href=/tags/orm/ style=font-size:1.0236220472440944em>ORM</a></li><li><a href=/tags/performance/ style=font-size:1.0393700787401574em>Performance</a></li><li><a href=/tags/pgp/ style=font-size:1em>PGP</a></li><li><a href=/tags/pills/ style=font-size:1.1968503937007875em>Pills</a></li><li><a href=/tags/pipeline/ style=font-size:1.0866141732283465em>Pipeline</a></li><li><a href=/tags/pipelines/ style=font-size:1.015748031496063em>pipelines</a></li><li><a href=/tags/plugin/ style=font-size:1.031496062992126em>Plugin</a></li><li><a href=/tags/power-tools/ style=font-size:1.0236220472440944em>Power Tools</a></li><li><a href=/tags/powershell/ style=font-size:1.110236220472441em>PowerShell</a></li><li><a href=/tags/process-template/ style=font-size:1.047244094488189em>Process Template</a></li><li><a href=/tags/programming/ style=font-size:1.141732283464567em>Programming</a></li><li><a href=/tags/pull-requests/ style=font-size:1.015748031496063em>Pull Requests</a></li><li><a href=/tags/pullrequests/ style=font-size:1em>PullRequests</a></li><li><a href=/tags/python/ style=font-size:1.015748031496063em>Python</a></li><li><a href=/tags/ravendb/ style=font-size:1.031496062992126em>RavenDB</a></li><li><a href=/tags/release/ style=font-size:1.0393700787401574em>Release</a></li><li><a href=/tags/resharper/ style=font-size:1.0236220472440944em>Resharper</a></li><li><a href=/tags/rest-api/ style=font-size:1em>REST Api</a></li><li><a href=/tags/rest-apis/ style=font-size:1.0236220472440944em>Rest APIs</a></li><li><a href=/tags/rhinomock/ style=font-size:1.0078740157480315em>RhinoMock</a></li><li><a href=/tags/scrum/ style=font-size:1.0078740157480315em>Scrum</a></li><li><a href=/tags/searching/ style=font-size:1.0393700787401574em>searching</a></li><li><a href=/tags/security/ style=font-size:1.3700787401574803em>security</a></li><li><a href=/tags/semantickernel/ style=font-size:1em>SemanticKernel</a></li><li><a href=/tags/shim/ style=font-size:1.0078740157480315em>shim</a></li><li><a href=/tags/silverlight/ style=font-size:1.015748031496063em>Silverlight</a></li><li><a href=/tags/software-architecture/ style=font-size:1.125984251968504em>Software Architecture</a></li><li><a href=/tags/solr/ style=font-size:1.0551181102362204em>Solr</a></li><li><a href=/tags/sonarcloud/ style=font-size:1.0078740157480315em>sonarcloud</a></li><li><a href=/tags/sonarqube/ style=font-size:1.0551181102362204em>sonarqube</a></li><li><a href=/tags/source-control/ style=font-size:1em>Source control</a></li><li><a href=/tags/springnet/ style=font-size:1em>SpringNET</a></li><li><a href=/tags/sql-server/ style=font-size:1.236220472440945em>Sql Server</a></li><li><a href=/tags/ssd/ style=font-size:1.047244094488189em>SSD</a></li><li><a href=/tags/symbols/ style=font-size:1em>Symbols</a></li><li><a href=/tags/team-foundation-server/ style=font-size:1.425196850393701em>Team Foundation Server</a></li><li><a href=/tags/teamfoundationserver/ style=font-size:1.0236220472440944em>TeamFoundationServer</a></li><li><a href=/tags/terraform/ style=font-size:1em>terraform</a></li><li><a href=/tags/test/ style=font-size:1.0078740157480315em>Test</a></li><li><a href=/tags/testing/ style=font-size:1.5511811023622046em>Testing</a></li><li><a href=/tags/tfs/ style=font-size:1.84251968503937em>Tfs</a></li><li><a href=/tags/tfs-build/ style=font-size:1.236220472440945em>TFS Build</a></li><li><a href=/tags/tfs-power-tools/ style=font-size:1.0078740157480315em>Tfs Power Tools</a></li><li><a href=/tags/tfs-service/ style=font-size:1.0078740157480315em>Tfs service</a></li><li><a href=/tags/tfs11/ style=font-size:1em>TFS11</a></li><li><a href=/tags/tfsapi/ style=font-size:1.031496062992126em>TfsAPI</a></li><li><a href=/tags/tfsbuild/ style=font-size:1.0629921259842519em>TfsBuild</a></li><li><a href=/tags/tfvc/ style=font-size:1.0078740157480315em>TFVC</a></li><li><a href=/tags/tika/ style=font-size:1.0236220472440944em>tika</a></li><li><a href=/tags/tls/ style=font-size:1.0078740157480315em>TLS</a></li><li><a href=/tags/tools/ style=font-size:1.0078740157480315em>Tools</a></li><li><a href=/tags/tools-and-library/ style=font-size:1.1338582677165354em>Tools and library</a></li><li><a href=/tags/tryhackme/ style=font-size:1em>TryHackMe</a></li><li><a href=/tags/uat/ style=font-size:1.015748031496063em>UAT</a></li><li><a href=/tags/ubuntu/ style=font-size:1em>Ubuntu</a></li><li><a href=/tags/unit-testing/ style=font-size:1.047244094488189em>Unit Testing</a></li><li><a href=/tags/unittesting/ style=font-size:1em>UnitTesting</a></li><li><a href=/tags/upgrade/ style=font-size:1em>Upgrade</a></li><li><a href=/tags/vcs/ style=font-size:1.015748031496063em>VCS</a></li><li><a href=/tags/virtual-machine/ style=font-size:1.031496062992126em>Virtual Machine</a></li><li><a href=/tags/visual-studio/ style=font-size:1.3307086614173227em>Visual Studio</a></li><li><a href=/tags/visual-studio-2013/ style=font-size:1.0078740157480315em>Visual Studio 2013</a></li><li><a href=/tags/visual-studio-alm/ style=font-size:1.1732283464566928em>Visual Studio ALM</a></li><li><a href=/tags/visual-studio-database-edition/ style=font-size:1.031496062992126em>Visual Studio Database Edition</a></li><li><a href=/tags/visualstudio/ style=font-size:1.0078740157480315em>VisualStudio</a></li><li><a href=/tags/vnext/ style=font-size:1.0551181102362204em>vNext</a></li><li><a href=/tags/vs11/ style=font-size:1.0236220472440944em>VS11</a></li><li><a href=/tags/vs2010/ style=font-size:1.0078740157480315em>VS2010</a></li><li><a href=/tags/vs2012/ style=font-size:1.031496062992126em>VS2012</a></li><li><a href=/tags/vsalm/ style=font-size:1.015748031496063em>VSAlm</a></li><li><a href=/tags/vso/ style=font-size:1.0708661417322836em>VSO</a></li><li><a href=/tags/vsts/ style=font-size:1.2913385826771653em>VSTS</a></li><li><a href=/tags/vstsdbedition/ style=font-size:1.0078740157480315em>VSTSDBEdition</a></li><li><a href=/tags/wcf/ style=font-size:1.125984251968504em>Wcf</a></li><li><a href=/tags/wcf-iis7/ style=font-size:1.0078740157480315em>WCF IIS7</a></li><li><a href=/tags/web-test/ style=font-size:1.015748031496063em>Web Test</a></li><li><a href=/tags/webbrowser/ style=font-size:1.015748031496063em>WebBrowser</a></li><li><a href=/tags/windows/ style=font-size:1.031496062992126em>Windows</a></li><li><a href=/tags/winforms/ style=font-size:1.0236220472440944em>Winforms</a></li><li><a href=/tags/workflow/ style=font-size:1.0236220472440944em>workflow</a></li><li><a href=/tags/wpf/ style=font-size:1.3937007874015748em>WPF</a></li><li><a href=/tags/wsl/ style=font-size:1em>WSL</a></li><li><a href=/tags/wsl2/ style=font-size:1em>wsl2</a></li><li><a href=/tags/xaml/ style=font-size:1.015748031496063em>XAML</a></li><li><a href=/tags/yaml/ style=font-size:1em>YAML</a></li><li><a href=/tags/zero-trust-security/ style=font-size:1.0078740157480315em>Zero Trust Security</a></li></ul></div></section></div><div class=sidebar-overlay></div></div><div class=main><nav id=main-menu class="menu main-menu" aria-label="Main Menu"><div class=container><a class=screen-reader-text href=#content>Skip to Content</a>
+<!doctype html><html lang=en dir=auto><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content='One of the most important stuff in a project build, is the ability to mark the assemblies with unique numbers that permits us to reproduce the build. Tfs does not have a standard way of doing this, but with a couple of MsBuild actions it is really simple to overcome this limitation. This is a good example that shows how you can extend build script to do complex task.
+First of all I want to change only AssemblyFileVersion and not the AssemblyVersion, in this way all builds are compatible until someone manually changes AssemblyVersion.'><meta name=theme-color content='#ffcd00'><meta property='og:title' content='Take control of assembly numbering during a tfs build • Codewrecks'><meta property='og:description' content='One of the most important stuff in a project build, is the ability to mark the assemblies with unique numbers that permits us to reproduce the build. Tfs does not have a standard way of doing this, but with a couple of MsBuild actions it is really simple to overcome this limitation. This is a good example that shows how you can extend build script to do complex task.
+First of all I want to change only AssemblyFileVersion and not the AssemblyVersion, in this way all builds are compatible until someone manually changes AssemblyVersion.'><meta property='og:url' content='https://www.codewrecks.com/post/old/2009/08/take-control-of-assembly-numbering-during-a-tfs-build/'><meta property='og:site_name' content='Codewrecks'><meta property='og:type' content='article'><meta property='article:section' content='post'><meta property='article:tag' content='Msbuild'><meta property='article:tag' content='TeamFoundationServer'><meta property='article:tag' content='TfsBuild'><meta property='article:published_time' content='2009-08-21T06:00:37+02:00'><meta property='article:modified_time' content='2009-08-21T06:00:37+02:00'><meta name=twitter:card content='summary'><meta name=generator content="Hugo 0.128.0"><title>Take control of assembly numbering during a tfs build • Codewrecks</title>
+<link rel=canonical href=https://www.codewrecks.com/post/old/2009/08/take-control-of-assembly-numbering-during-a-tfs-build/><link rel=icon href=/favicon.ico><link rel=stylesheet href=/assets/css/main.ab98e12b.css><style>:root{--color-accent:#ffcd00}</style><script src=https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js></script><script src=https://www.codewrecks.com/js/jquery-eu-cookie-law-popup.js></script><link rel=stylesheet href=https://www.codewrecks.com/css/jquery-eu-cookie-law-popup.css><script async src="https://www.googletagmanager.com/gtag/js?id=G-JNG3CSWEQT"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-JNG3CSWEQT")</script></head><body class='page type-post has-sidebar'><div class=site><div id=sidebar class=sidebar><a class=screen-reader-text href=#main-menu>Skip to Main Menu</a><div class=container><section class='widget widget-about sep-after'><header><div class=logo><a href=/><img src=/images/logo.png></a></div><h2 class='title site-title'><a href=/>Codewrecks</a></h2><div class=desc>Wrecks of code floating in the sea of internet</div></header></section><section class='widget widget-sidebar_menu sep-after'><nav id=sidebar-menu class='menu sidebar-menu' aria-label='Sidebar Menu'><div class=container><ul><li class=item><a href=/>Home</a></li></ul></div></nav></section><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6590055118491660" crossorigin=anonymous></script><section class='widget widget-taxonomy_cloud sep-after'><header><h4 class='title widget-title'>Tags</h4></header><div class='container list-container'><ul class='list taxonomy-cloud'><li><a href=/tags/actions/ style=font-size:1.0078740157480315em>Actions</a></li><li><a href=/tags/addin/ style=font-size:1.0078740157480315em>Addin</a></li><li><a href=/tags/agile/ style=font-size:1.0236220472440944em>Agile</a></li><li><a href=/tags/ai/ style=font-size:1.015748031496063em>AI</a></li><li><a href=/tags/alm/ style=font-size:1.0629921259842519em>ALM</a></li><li><a href=/tags/aop/ style=font-size:1.0236220472440944em>Aop</a></li><li><a href=/tags/api/ style=font-size:1.1181102362204725em>API</a></li><li><a href=/tags/applicationinsights/ style=font-size:1.0236220472440944em>ApplicationInsights</a></li><li><a href=/tags/architecture/ style=font-size:1.1023622047244095em>Architecture</a></li><li><a href=/tags/architecture-castle/ style=font-size:1.0078740157480315em>Architecture Castle</a></li><li><a href=/tags/aspnet/ style=font-size:1.3700787401574803em>Aspnet</a></li><li><a href=/tags/aspnet-mvc/ style=font-size:1.031496062992126em>AspNet MVC</a></li><li><a href=/tags/automation/ style=font-size:1.0078740157480315em>Automation</a></li><li><a href=/tags/azdo/ style=font-size:1.2125984251968505em>AzDo</a></li><li><a href=/tags/azure/ style=font-size:1.0866141732283465em>Azure</a></li><li><a href=/tags/azure-devops/ style=font-size:1.110236220472441em>Azure Devops</a></li><li><a href=/tags/azure-pipelines/ style=font-size:1.031496062992126em>Azure Pipelines</a></li><li><a href=/tags/azuredevops/ style=font-size:1.1023622047244095em>AzureDevOps</a></li><li><a href=/tags/backup/ style=font-size:1.0078740157480315em>Backup</a></li><li><a href=/tags/blend/ style=font-size:1.0078740157480315em>Blend</a></li><li><a href=/tags/blog/ style=font-size:1.0078740157480315em>Blog</a></li><li><a href=/tags/blogging/ style=font-size:1.0551181102362204em>Blogging</a></li><li><a href=/tags/books/ style=font-size:1.015748031496063em>Books</a></li><li><a href=/tags/branch/ style=font-size:1em>Branch</a></li><li><a href=/tags/build/ style=font-size:1.5984251968503937em>Build</a></li><li><a href=/tags/c/ style=font-size:1.0078740157480315em>C</a></li><li><a href=/tags/castle/ style=font-size:1.236220472440945em>Castle</a></li><li><a href=/tags/chatgpt/ style=font-size:1.0078740157480315em>ChatGPT</a></li><li><a href=/tags/clickonce/ style=font-size:1.0236220472440944em>ClickOnce</a></li><li><a href=/tags/codeanalysis/ style=font-size:1.0078740157480315em>CodeAnalysis</a></li><li><a href=/tags/codespaces/ style=font-size:1.031496062992126em>Codespaces</a></li><li><a href=/tags/continuos-integration/ style=font-size:1.031496062992126em>Continuos Integration</a></li><li><a href=/tags/continuous-deployment/ style=font-size:1.0393700787401574em>Continuous Deployment</a></li><li><a href=/tags/continuous-integration/ style=font-size:1.0866141732283465em>Continuous Integration</a></li><li><a href=/tags/continuousdeployment/ style=font-size:1.0551181102362204em>ContinuousDeployment</a></li><li><a href=/tags/copilot/ style=font-size:1.015748031496063em>Copilot</a></li><li><a href=/tags/cqrs/ style=font-size:1.0078740157480315em>CQRS</a></li><li><a href=/tags/datadude/ style=font-size:1.0393700787401574em>DataDude</a></li><li><a href=/tags/datagrid/ style=font-size:1.0078740157480315em>DataGrid</a></li><li><a href=/tags/ddd/ style=font-size:1.1181102362204725em>DDD</a></li><li><a href=/tags/debugging/ style=font-size:1.0078740157480315em>Debugging</a></li><li><a href=/tags/developing/ style=font-size:1em>Developing</a></li><li><a href=/tags/devops/ style=font-size:1.1181102362204725em>Devops</a></li><li><a href=/tags/docker/ style=font-size:1.0078740157480315em>Docker</a></li><li><a href=/tags/dotnet/ style=font-size:1em>Dotnet</a></li><li><a href=/tags/ef/ style=font-size:1.0078740157480315em>EF</a></li><li><a href=/tags/ef-code-first/ style=font-size:1.031496062992126em>EF Code First</a></li><li><a href=/tags/ef41/ style=font-size:1.0236220472440944em>EF41</a></li><li><a href=/tags/ef5/ style=font-size:1.015748031496063em>EF5</a></li><li><a href=/tags/enterprise-library/ style=font-size:1.0236220472440944em>Enterprise Library</a></li><li><a href=/tags/entity-framework/ style=font-size:1.094488188976378em>Entity Framework</a></li><li><a href=/tags/everydaylife/ style=font-size:1.047244094488189em>EverydayLife</a></li><li><a href=/tags/excel/ style=font-size:1.0078740157480315em>Excel</a></li><li><a href=/tags/experiences/ style=font-size:1.2440944881889764em>Experiences</a></li><li><a href=/tags/frameworks/ style=font-size:1.0629921259842519em>Frameworks</a></li><li><a href=/tags/general/ style=font-size:2em>General</a></li><li><a href=/tags/git/ style=font-size:1.2283464566929134em>Git</a></li><li><a href=/tags/git-tf/ style=font-size:1.0078740157480315em>Git-Tf</a></li><li><a href=/tags/github/ style=font-size:1.236220472440945em>Github</a></li><li><a href=/tags/github-actions/ style=font-size:1.0236220472440944em>GitHub Actions</a></li><li><a href=/tags/gpt4/ style=font-size:1em>GPT4</a></li><li><a href=/tags/hacking/ style=font-size:1em>Hacking</a></li><li><a href=/tags/hardware/ style=font-size:1.031496062992126em>Hardware</a></li><li><a href=/tags/homelab/ style=font-size:1em>HomeLab</a></li><li><a href=/tags/hql/ style=font-size:1.0078740157480315em>HQL</a></li><li><a href=/tags/html/ style=font-size:1.0078740157480315em>Html</a></li><li><a href=/tags/hugo/ style=font-size:1em>Hugo</a></li><li><a href=/tags/icriteria/ style=font-size:1.0078740157480315em>ICriteria</a></li><li><a href=/tags/iis/ style=font-size:1.015748031496063em>IIS</a></li><li><a href=/tags/ioc/ style=font-size:1.015748031496063em>IoC</a></li><li><a href=/tags/javascript/ style=font-size:1.0078740157480315em>Javascript</a></li><li><a href=/tags/jquery/ style=font-size:1.047244094488189em>JQuery</a></li><li><a href=/tags/lab-management/ style=font-size:1.1023622047244095em>Lab Management</a></li><li><a href=/tags/languages/ style=font-size:1.0551181102362204em>Languages</a></li><li><a href=/tags/linq/ style=font-size:1.204724409448819em>LINQ</a></li><li><a href=/tags/linux/ style=font-size:1.0551181102362204em>Linux</a></li><li><a href=/tags/log4net/ style=font-size:1.047244094488189em>Log4net</a></li><li><a href=/tags/lucene/ style=font-size:1.0629921259842519em>Lucene</a></li><li><a href=/tags/macro/ style=font-size:1.0236220472440944em>Macro</a></li><li><a href=/tags/masstransit/ style=font-size:1.015748031496063em>Masstransit</a></li><li><a href=/tags/mef/ style=font-size:1.0236220472440944em>MEF</a></li><li><a href=/tags/metroui/ style=font-size:1.0078740157480315em>MetroUi</a></li><li><a href=/tags/microsoft-test-manager/ style=font-size:1.015748031496063em>Microsoft Test Manager</a></li><li><a href=/tags/mms/ style=font-size:1.015748031496063em>Mms</a></li><li><a href=/tags/mongo/ style=font-size:1.0236220472440944em>Mongo</a></li><li><a href=/tags/mongodb/ style=font-size:1.1574803149606299em>MongoDb</a></li><li><a href=/tags/msbuild/ style=font-size:1.031496062992126em>Msbuild</a></li><li><a href=/tags/mstest/ style=font-size:1.0078740157480315em>MsTest</a></li><li><a href=/tags/mvvm/ style=font-size:1.0708661417322836em>MVVM</a></li><li><a href=/tags/nablasoft/ style=font-size:1.0236220472440944em>Nablasoft</a></li><li><a href=/tags/ndepend/ style=font-size:1.0236220472440944em>NDepend</a></li><li><a href=/tags/net/ style=font-size:1.0236220472440944em>Net</a></li><li><a href=/tags/net-core/ style=font-size:1.0078740157480315em>NET Core</a></li><li><a href=/tags/net-framework/ style=font-size:1.5118110236220472em>NET Framework</a></li><li><a href=/tags/netcore/ style=font-size:1.0236220472440944em>NETCORE</a></li><li><a href=/tags/nhibernate/ style=font-size:1.5039370078740157em>Nhibernate</a></li><li><a href=/tags/nosql/ style=font-size:1.0629921259842519em>NoSql</a></li><li><a href=/tags/nsm/ style=font-size:1em>Nsm</a></li><li><a href=/tags/nuget/ style=font-size:1.0393700787401574em>Nuget</a></li><li><a href=/tags/nunit/ style=font-size:1.0393700787401574em>Nunit</a></li><li><a href=/tags/office/ style=font-size:1.0236220472440944em>Office</a></li><li><a href=/tags/oidc/ style=font-size:1em>OIDC</a></li><li><a href=/tags/oop/ style=font-size:1.0236220472440944em>OOP</a></li><li><a href=/tags/openxml/ style=font-size:1.0078740157480315em>OpenXml</a></li><li><a href=/tags/orm/ style=font-size:1.0236220472440944em>ORM</a></li><li><a href=/tags/performance/ style=font-size:1.0393700787401574em>Performance</a></li><li><a href=/tags/pgp/ style=font-size:1em>PGP</a></li><li><a href=/tags/pills/ style=font-size:1.204724409448819em>Pills</a></li><li><a href=/tags/pipeline/ style=font-size:1.0866141732283465em>Pipeline</a></li><li><a href=/tags/pipelines/ style=font-size:1.015748031496063em>Pipelines</a></li><li><a href=/tags/plugin/ style=font-size:1.031496062992126em>Plugin</a></li><li><a href=/tags/power-tools/ style=font-size:1.0236220472440944em>Power Tools</a></li><li><a href=/tags/powershell/ style=font-size:1.110236220472441em>PowerShell</a></li><li><a href=/tags/process-template/ style=font-size:1.047244094488189em>Process Template</a></li><li><a href=/tags/programming/ style=font-size:1.141732283464567em>Programming</a></li><li><a href=/tags/pull-requests/ style=font-size:1.015748031496063em>Pull Requests</a></li><li><a href=/tags/pullrequests/ style=font-size:1em>PullRequests</a></li><li><a href=/tags/python/ style=font-size:1.015748031496063em>Python</a></li><li><a href=/tags/ravendb/ style=font-size:1.031496062992126em>RavenDB</a></li><li><a href=/tags/release/ style=font-size:1.0393700787401574em>Release</a></li><li><a href=/tags/resharper/ style=font-size:1.0236220472440944em>Resharper</a></li><li><a href=/tags/rest-api/ style=font-size:1em>REST Api</a></li><li><a href=/tags/rest-apis/ style=font-size:1.0236220472440944em>Rest APIs</a></li><li><a href=/tags/rhinomock/ style=font-size:1.0078740157480315em>RhinoMock</a></li><li><a href=/tags/scrum/ style=font-size:1.0078740157480315em>Scrum</a></li><li><a href=/tags/searching/ style=font-size:1.0393700787401574em>Searching</a></li><li><a href=/tags/security/ style=font-size:1.3700787401574803em>Security</a></li><li><a href=/tags/semantickernel/ style=font-size:1em>SemanticKernel</a></li><li><a href=/tags/shim/ style=font-size:1.0078740157480315em>Shim</a></li><li><a href=/tags/silverlight/ style=font-size:1.015748031496063em>Silverlight</a></li><li><a href=/tags/software-architecture/ style=font-size:1.125984251968504em>Software Architecture</a></li><li><a href=/tags/solr/ style=font-size:1.0551181102362204em>Solr</a></li><li><a href=/tags/sonarcloud/ style=font-size:1.0078740157480315em>Sonarcloud</a></li><li><a href=/tags/sonarqube/ style=font-size:1.0551181102362204em>Sonarqube</a></li><li><a href=/tags/source-control/ style=font-size:1em>Source Control</a></li><li><a href=/tags/springnet/ style=font-size:1em>SpringNET</a></li><li><a href=/tags/sql-server/ style=font-size:1.236220472440945em>Sql Server</a></li><li><a href=/tags/ssd/ style=font-size:1.047244094488189em>SSD</a></li><li><a href=/tags/symbols/ style=font-size:1em>Symbols</a></li><li><a href=/tags/team-foundation-server/ style=font-size:1.425196850393701em>Team Foundation Server</a></li><li><a href=/tags/teamfoundationserver/ style=font-size:1.0236220472440944em>TeamFoundationServer</a></li><li><a href=/tags/terraform/ style=font-size:1em>Terraform</a></li><li><a href=/tags/test/ style=font-size:1.0078740157480315em>Test</a></li><li><a href=/tags/testing/ style=font-size:1.5511811023622046em>Testing</a></li><li><a href=/tags/tfs/ style=font-size:1.84251968503937em>Tfs</a></li><li><a href=/tags/tfs-build/ style=font-size:1.236220472440945em>TFS Build</a></li><li><a href=/tags/tfs-power-tools/ style=font-size:1.0078740157480315em>Tfs Power Tools</a></li><li><a href=/tags/tfs-service/ style=font-size:1.0078740157480315em>Tfs Service</a></li><li><a href=/tags/tfs11/ style=font-size:1em>TFS11</a></li><li><a href=/tags/tfsapi/ style=font-size:1.031496062992126em>TfsAPI</a></li><li><a href=/tags/tfsbuild/ style=font-size:1.0629921259842519em>TfsBuild</a></li><li><a href=/tags/tfvc/ style=font-size:1.0078740157480315em>TFVC</a></li><li><a href=/tags/tika/ style=font-size:1.0236220472440944em>Tika</a></li><li><a href=/tags/tls/ style=font-size:1.0078740157480315em>TLS</a></li><li><a href=/tags/tools/ style=font-size:1.0078740157480315em>Tools</a></li><li><a href=/tags/tools-and-library/ style=font-size:1.1338582677165354em>Tools and Library</a></li><li><a href=/tags/tryhackme/ style=font-size:1em>TryHackMe</a></li><li><a href=/tags/uat/ style=font-size:1.015748031496063em>UAT</a></li><li><a href=/tags/ubuntu/ style=font-size:1em>Ubuntu</a></li><li><a href=/tags/unit-testing/ style=font-size:1.047244094488189em>Unit Testing</a></li><li><a href=/tags/unittesting/ style=font-size:1em>UnitTesting</a></li><li><a href=/tags/upgrade/ style=font-size:1em>Upgrade</a></li><li><a href=/tags/vcs/ style=font-size:1.015748031496063em>VCS</a></li><li><a href=/tags/virtual-machine/ style=font-size:1.031496062992126em>Virtual Machine</a></li><li><a href=/tags/visual-studio/ style=font-size:1.3307086614173227em>Visual Studio</a></li><li><a href=/tags/visual-studio-2013/ style=font-size:1.0078740157480315em>Visual Studio 2013</a></li><li><a href=/tags/visual-studio-alm/ style=font-size:1.1732283464566928em>Visual Studio ALM</a></li><li><a href=/tags/visual-studio-database-edition/ style=font-size:1.031496062992126em>Visual Studio Database Edition</a></li><li><a href=/tags/visualstudio/ style=font-size:1.0078740157480315em>VisualStudio</a></li><li><a href=/tags/vnext/ style=font-size:1.0551181102362204em>VNext</a></li><li><a href=/tags/vs11/ style=font-size:1.0236220472440944em>VS11</a></li><li><a href=/tags/vs2010/ style=font-size:1.0078740157480315em>VS2010</a></li><li><a href=/tags/vs2012/ style=font-size:1.031496062992126em>VS2012</a></li><li><a href=/tags/vsalm/ style=font-size:1.015748031496063em>VSAlm</a></li><li><a href=/tags/vso/ style=font-size:1.0708661417322836em>VSO</a></li><li><a href=/tags/vsts/ style=font-size:1.2913385826771653em>VSTS</a></li><li><a href=/tags/vstsdbedition/ style=font-size:1.0078740157480315em>VSTSDBEdition</a></li><li><a href=/tags/wcf/ style=font-size:1.125984251968504em>Wcf</a></li><li><a href=/tags/wcf-iis7/ style=font-size:1.0078740157480315em>WCF IIS7</a></li><li><a href=/tags/web-test/ style=font-size:1.015748031496063em>Web Test</a></li><li><a href=/tags/webbrowser/ style=font-size:1.015748031496063em>WebBrowser</a></li><li><a href=/tags/windows/ style=font-size:1.031496062992126em>Windows</a></li><li><a href=/tags/winforms/ style=font-size:1.0236220472440944em>Winforms</a></li><li><a href=/tags/workflow/ style=font-size:1.0236220472440944em>Workflow</a></li><li><a href=/tags/wpf/ style=font-size:1.3937007874015748em>WPF</a></li><li><a href=/tags/wsl/ style=font-size:1em>WSL</a></li><li><a href=/tags/wsl2/ style=font-size:1em>Wsl2</a></li><li><a href=/tags/xaml/ style=font-size:1.015748031496063em>XAML</a></li><li><a href=/tags/yaml/ style=font-size:1em>YAML</a></li><li><a href=/tags/zero-trust-security/ style=font-size:1.0078740157480315em>Zero Trust Security</a></li></ul></div></section></div><div class=sidebar-overlay></div></div><div class=main><nav id=main-menu class='menu main-menu' aria-label='Main Menu'><div class=container><a class=screen-reader-text href=#content>Skip to Content</a>
 <button id=sidebar-toggler class=sidebar-toggler aria-controls=sidebar>
 <span class=screen-reader-text>Toggle Sidebar</span>
-<span class=open><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></span><span class=close><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span></button><ul><li class=item><a href=/>Home</a></li><li class=item><a href=/categories/>Categories</a></li><li class=item><a href=/about/>About</a></li><li class=item><a href=/git-videos/>Git Videos</a></li><li class=item><a href=/privacy/>Privacy</a></li><li class=item><a href=/youtube/>YouTube</a></li></ul></div></nav><div class=header-widgets><div class=container><style>.widget-breadcrumbs li:after{content:'\2f '}</style><section class="widget widget-breadcrumbs sep-after"><nav id=breadcrumbs><ol><li><a href=/>Home</a></li><li><a href=/post/>Posts</a></li><li><span>Take control of assembly numbering during a tfs build</span></li></ol></nav></section></div></div><header id=header class="header site-header"><div class="container sep-after"><div class=header-info><p class="site-title title">Codewrecks</p><p class="desc site-desc">Wrecks of code floating in the sea of internet</p></div></div></header><main id=content><article lang=en class=entry><header class="header entry-header"><div class="container sep-after"><div class=header-info><h1 class=title>Take control of assembly numbering during a tfs build</h1></div><div class=entry-meta><span class=posted-on><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span class=screen-reader-text>Posted on</span>
-<time class=entry-date datetime=2009-08-21T06:00:37+02:00>2009, Aug 21</time></span>
-<span class=reading-time><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 15 15"/></svg>9 mins read</span></div></div></header><div class="container entry-content"><p>One of the most important stuff in a project build, is <em>the ability to mark the assemblies with unique numbers that permits us to reproduce the build</em>. Tfs does not have a standard way of doing this, but with a couple of MsBuild actions it is really simple to overcome this limitation. This is a good example that shows how you can extend build script to do complex task.</p><p>First of all I want to change only <a href=http://msdn.microsoft.com/en-us/library/system.reflection.assemblyfileversionattribute.aspx>AssemblyFileVersion</a> and not the AssemblyVersion, in this way all builds are compatible until someone manually changes AssemblyVersion. A standard technique I like very much is letting the programmers to <em>manage major and minor number manually</em>, and <em>letting my builds generates build and revision ones</em>. For build number I want to be able to generate a unique number each build, a sequential generator will be fine; but for revision number I want to use the changeset used to generate the build. To accomplish this we need essentially four macro steps.</p><p><a target=_blank href=http://yuml.me/45c1d876><img src=http://yuml.me/45c1d876 alt="External Image"></a></p><p>In the first step I need to generate unique integer build number, most of the time sequential generator is ok, then I need also to find a way to correlate this generated number with the build label of the TFS. Step two is used to find latest changeset, then in step three we need to check-in modified files (the one used by the generator), being sure that this check-in does not trigger another build, finally we need to modify a file named ProjectVersion.cs that is used by all projects.</p><p>To modify AssemblyFileVersion for a project I love this technique: I remove AssemblyFileVersion and AssemblyVersion attributes from assemblyinfo.cs, put them in a single <strong>ProjectVersion.cs</strong> file stored in the root of the team project. Here is a typical content for the ProjectVersion.cs.</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=color:#66d9ef>using</span> System.Reflection;
-<span style=color:#a6e22e>[assembly: AssemblyVersion(&#34;1.2.0.0&#34;)]</span>
-<span style=color:#a6e22e>[assembly: AssemblyFileVersion(&#34;1.2.0.0&#34;)]</span>
-</code></pre></td></tr></table></div></div><p>Next I import this file as link in every project that belong to this team project</p><p><a href=https://www.codewrecks.com/blog/wp-content/uploads/2009/08/image25.png><a target=_blank href=https://www.codewrecks.com/blog/wp-content/uploads/2009/08/image-thumb25.png><img src=https://www.codewrecks.com/blog/wp-content/uploads/2009/08/image-thumb25.png alt=image></a></a></p><p>With this little trick to change AssemblyFileVersion attribute for every project I<em>need only to change one file.</em> Now it is time to build some custom tasks that will help us to manage the whole process, first of all the task that generates unique numbers and correlate them with build label.</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">36
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">37
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">38
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">39
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">40
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">41
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">42
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">43
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">44
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">45
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">46
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">47
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">48
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">49
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">50
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">51
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-CSharp data-lang=CSharp><span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>BuildVersionNumberManagerTask</span> : Task
-{
-    <span style=color:#75715e>/// &lt;summary&gt;
-</span><span style=color:#75715e></span>    <span style=color:#75715e>/// Filename that will store the versions
-</span><span style=color:#75715e></span>    <span style=color:#75715e>/// &lt;/summary&gt;
-</span><span style=color:#75715e></span><span style=color:#a6e22e>    [Required]</span>
-    <span style=color:#66d9ef>public</span> String VersionFileName { <span style=color:#66d9ef>get</span>; <span style=color:#66d9ef>set</span>; }
-
-    <span style=color:#75715e>/// &lt;summary&gt;
-</span><span style=color:#75715e></span>    <span style=color:#75715e>/// label of the current build.
-</span><span style=color:#75715e></span>    <span style=color:#75715e>/// &lt;/summary&gt;
-</span><span style=color:#75715e></span><span style=color:#a6e22e>    [Required]</span>
-    <span style=color:#66d9ef>public</span> String BuildLabel { <span style=color:#66d9ef>get</span>; <span style=color:#66d9ef>set</span>; }
-
-    <span style=color:#75715e>/// &lt;summary&gt;
-</span><span style=color:#75715e></span>    <span style=color:#75715e>/// new incremental version numer.
-</span><span style=color:#75715e></span>    <span style=color:#75715e>/// &lt;/summary&gt;
-</span><span style=color:#75715e></span><span style=color:#a6e22e>    [Output]</span>
-    <span style=color:#66d9ef>public</span> Int32 NewVersionNumber { <span style=color:#66d9ef>get</span>; <span style=color:#66d9ef>set</span>; }
-
-    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>override</span> <span style=color:#66d9ef>bool</span> Execute()
-    {
-        <span style=color:#66d9ef>if</span> (!File.Exists(VersionFileName))
-        {
-            Log.LogError(<span style=color:#e6db74>&#34;The file {0}[{1}] with version number does not exists&#34;</span>, VersionFileName, Path.GetFullPath(VersionFileName));
-            <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>false</span>;
-        }
-        String[] allLines = File.ReadAllLines(VersionFileName);
-        String startChar = <span style=color:#e6db74>&#34;&#34;</span>;
-        <span style=color:#66d9ef>if</span> (allLines.Length &gt; <span style=color:#ae81ff>0</span> &amp;&amp; !String.IsNullOrEmpty(allLines[allLines.Length - <span style=color:#ae81ff>1</span>]))
-        {
-            startChar = <span style=color:#e6db74>&#34;\n&#34;</span>;
-            String lastline = allLines[allLines.Length - <span style=color:#ae81ff>1</span>];
-            String lastNum = lastline.Substring(<span style=color:#ae81ff>0</span>, lastline.IndexOf(<span style=color:#e6db74>&#34;|&#34;</span>));
-            Int32 lastNumber;
-            <span style=color:#66d9ef>if</span> (!Int32.TryParse(lastNum, <span style=color:#66d9ef>out</span> lastNumber))
-            {
-                Log.LogError(<span style=color:#e6db74>&#34;There are errors in the version file, the last line does not contains lastnum|lastlabel valid format&#34;</span>);
-                <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>false</span>;
-            }
-            NewVersionNumber = lastNumber + <span style=color:#ae81ff>1</span>;
-        } <span style=color:#66d9ef>else</span>
-        {
-            <span style=color:#75715e>//There is no lines, or the last line is empty.
-</span><span style=color:#75715e></span>            NewVersionNumber = <span style=color:#ae81ff>1</span>;
-        }
-        String newLastLine = String.Format(<span style=color:#e6db74>&#34;{0}{1}|{2}&#34;</span>,startChar,  NewVersionNumber, BuildLabel);
-        File.AppendAllText(VersionFileName, newLastLine);
-        <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>true</span>;
-    }
-}
-</code></pre></td></tr></table></div></div><p>The BuildVersionNumberManagerTask is responsible of the generation of a sequential number, as well as storing in a file the relationship between autogenerated numbers and build labels. It use a simple text file and write a line for each generated number. Here is an example of file content.</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp>...
-<span style=color:#ae81ff>3</span>|Standard build <span style=color:#66d9ef>for</span> CI_20090820.<span style=color:#ae81ff>20</span>
-<span style=color:#ae81ff>4</span>|Standard build <span style=color:#66d9ef>for</span> CI_20090820.<span style=color:#ae81ff>21</span>
-<span style=color:#ae81ff>5</span>|Standard build <span style=color:#66d9ef>for</span> CI_20090820.<span style=color:#ae81ff>24</span>
-...
-</code></pre></td></tr></table></div></div><p>With such a technique, we can immediately find the build label associated with each auto generated number. Now if you have problem with an assembly that have 4 as the build number, I immediately find in the file that it was build by * <strong>Standard build for CI_20090820.21</strong> * Here is how I call this task into TFSBuild.proj file</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-xml data-lang=xml><span style=color:#f92672>&lt;PropertyGroup&gt;</span>
-        <span style=color:#f92672>&lt;tfTool&gt;</span>&#34;C:\Program Files\Microsoft Visual Studio 9.0\Common7\IDE\tf.exe&#34;<span style=color:#f92672>&lt;/tfTool&gt;</span>
-       ...
-<span style=color:#f92672>&lt;Target</span> <span style=color:#a6e22e>Name=</span><span style=color:#e6db74>&#34;BeforeCompile&#34;</span> <span style=color:#a6e22e>Condition=</span><span style=color:#e6db74>&#34; &#39;$(IsDesktopBuild)&#39; != &#39;true&#39; &#34;</span><span style=color:#f92672>&gt;</span>
-        <span style=color:#f92672>&lt;Message</span> <span style=color:#a6e22e>Text=</span><span style=color:#e6db74>&#34;Beginning generation of new AssemblyFileVersionAttribute&#34;</span> <span style=color:#f92672>/&gt;</span>
-        <span style=color:#f92672>&lt;Exec</span> <span style=color:#a6e22e>Command=</span><span style=color:#e6db74>&#34;$(tfTool) checkout..\sources\src\StandardBuildForCIVersion.txt&#34;</span>  <span style=color:#f92672>/&gt;</span>
-        <span style=color:#f92672>&lt;BuildVersionNumberManagerTask</span>
-            <span style=color:#a6e22e>VersionFileName=</span><span style=color:#e6db74>&#34;..\sources\src\StandardBuildForCIVersion.txt&#34;</span>
-            <span style=color:#a6e22e>BuildLabel=</span><span style=color:#e6db74>&#34;$(BuildNumber)&#34;</span><span style=color:#f92672>&gt;</span>
-            <span style=color:#f92672>&lt;Output</span> <span style=color:#a6e22e>TaskParameter=</span><span style=color:#e6db74>&#34;NewVersionNumber&#34;</span> <span style=color:#a6e22e>PropertyName=</span><span style=color:#e6db74>&#34;NewVersionNumber&#34;</span> <span style=color:#f92672>/&gt;</span>
-        <span style=color:#f92672>&lt;/BuildVersionNumberManagerTask&gt;</span></code></pre></td></tr></table></div></div><p>I override the BeforeCompile task, since I need to change version number before the compile phase. As you can see <em>I use the Exex command to call the tf.exe tool to checkout the file</em> * <strong>StandardBuildForCIVersion.txt</strong> *, the one used to store autogenerated numbers. In this way I can use a different file for each build definition or I can use same file for different builds, I have great flexibility. The checkout is needed because I want to check in modified file at the end of the process, in this way the autogenerated number can be accessed from other build agents. Then I need another custom task capable to modify the ProjectVersion.cs file.</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">36
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">37
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">38
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">39
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-CSharp data-lang=CSharp><span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>AssemblyInfoVersionManagerTask</span> : Task
-{
-<span style=color:#a6e22e>    [Required]</span>
-    <span style=color:#66d9ef>public</span> String AssemblyInfoFileName { <span style=color:#66d9ef>get</span>; <span style=color:#66d9ef>set</span>; }
-<span style=color:#a6e22e>
-</span><span style=color:#a6e22e>    [Required]</span>
-    <span style=color:#66d9ef>public</span> Int32 NewBuildNumber { <span style=color:#66d9ef>get</span>; <span style=color:#66d9ef>set</span>; }
-<span style=color:#a6e22e>
-</span><span style=color:#a6e22e>    [Required]</span>
-    <span style=color:#66d9ef>public</span> Int32 NewRevisionNumber { <span style=color:#66d9ef>get</span>; <span style=color:#66d9ef>set</span>; }
-    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>override</span> <span style=color:#66d9ef>bool</span> Execute()
-    {
-        <span style=color:#66d9ef>if</span> (!File.Exists(AssemblyInfoFileName))
-        {
-            Log.LogError(<span style=color:#e6db74>&#34;The file {0} does not exists&#34;</span>, AssemblyInfoFileName);
-            <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>false</span>;
-        }
-        String filecontent = File.ReadAllText(AssemblyInfoFileName);
-        Match curVersionMatch =
-            Regex.Match(filecontent, <span style=color:#e6db74>&#34;AssemblyVersion\\(\&#34;(?&lt;curversion&gt;.*?)\&#34;\\)&#34;</span>);
-        <span style=color:#66d9ef>if</span> (!curVersionMatch.Success)
-        {
-            Log.LogError(<span style=color:#e6db74>&#34;The content of file {0} does not contains valid Assemblyversion attribute&#34;</span>);
-            <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>false</span>;
-        }
-        String curversion = curVersionMatch.Groups[<span style=color:#e6db74>&#34;curversion&#34;</span>].Value;
-        String[] versionParts = curversion.Split(<span style=color:#e6db74>&#39;.&#39;</span>);
-        String newVersion = String.Format(<span style=color:#e6db74>&#34;{0}.{1}.{2}.{3}&#34;</span>, versionParts[<span style=color:#ae81ff>0</span>], versionParts[<span style=color:#ae81ff>1</span>], NewBuildNumber, NewRevisionNumber);
-        String newFileContent = Regex.Replace(
-            filecontent,
-            <span style=color:#e6db74>&#34;AssemblyFileVersion\\(\&#34;(?&lt;curversion&gt;.*?)\&#34;\\)&#34;</span>,
-            String.Format(<span style=color:#e6db74>@&#34;AssemblyFileVersion(&#34;&#34;{0}&#34;&#34;)&#34;</span>, newVersion));
-        FileAttributes currentFileAttributes = File.GetAttributes(AssemblyInfoFileName);
-        File.SetAttributes(AssemblyInfoFileName, FileAttributes.Normal);
-        File.WriteAllText(AssemblyInfoFileName, newFileContent);
-        File.SetAttributes(AssemblyInfoFileName, currentFileAttributes);
-        <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>true</span>;
-    }
-}
-</code></pre></td></tr></table></div></div><p>This is another simple task, it uses a little bit of regular expression to find actual version number stored in the ProjectVersion.cs, then it creates another version number with simple composition. <strong>Major and minor number are taken from the original content, while build and revision are passed by the caller</strong>. Remember also to remove the Readonly attribute from the file, because it is usually readonly since it is under version control. Now I need the last piece, a simple TfTask that permits me to grab the changeset number associated with the current project.</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">36
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">37
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">38
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">39
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">40
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">41
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">42
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">43
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">44
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">45
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">46
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">47
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">48
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">49
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">50
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">51
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">52
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">53
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">54
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">55
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">56
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">57
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">58
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">59
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">60
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">61
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">62
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-CSharp data-lang=CSharp><span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>TfTask</span> : ToolTask
-{
-    <span style=color:#66d9ef>public</span> TfTask()
-    {
-        ToolPath = <span style=color:#e6db74>@&#34;C:\Program Files\Microsoft Visual Studio 9.0\Common7\IDE\&#34;</span>;
-    }
-<span style=color:#a6e22e>
-</span><span style=color:#a6e22e>    [Required]</span>
-    <span style=color:#66d9ef>public</span> String Operation { <span style=color:#66d9ef>get</span>; <span style=color:#66d9ef>set</span>; }
-<span style=color:#a6e22e>
-</span><span style=color:#a6e22e>    [Output]</span>
-    <span style=color:#66d9ef>public</span> String TfOutput { <span style=color:#66d9ef>get</span>; <span style=color:#66d9ef>set</span>; }
-
-    <span style=color:#66d9ef>public</span> String TfsUrl { <span style=color:#66d9ef>get</span>; <span style=color:#66d9ef>set</span>; }
-
-    <span style=color:#66d9ef>public</span> String TeamProject { <span style=color:#66d9ef>get</span>; <span style=color:#66d9ef>set</span>; }
-
-    <span style=color:#66d9ef>protected</span> <span style=color:#66d9ef>override</span> <span style=color:#66d9ef>int</span> ExecuteTool(<span style=color:#66d9ef>string</span> pathToTool, <span style=color:#66d9ef>string</span> responseFileCommands, <span style=color:#66d9ef>string</span> commandLineCommands)
-    {
-        TfTaskOperation operation = (TfTaskOperation)Enum.Parse(<span style=color:#66d9ef>typeof</span>(TfTaskOperation), Operation);
-        String commandline;
-        <span style=color:#66d9ef>switch</span> (operation)
-        {
-            <span style=color:#66d9ef>case</span> TfTaskOperation.GetLatestChangeset:
-                commandline = String.Format(
-                    <span style=color:#e6db74>&#34;history /s:{0} /stopafter:1 /noprompt /recursive /version:T $/{1}&#34;</span>, TfsUrl, TeamProject);
-                <span style=color:#66d9ef>break</span>;
-            <span style=color:#66d9ef>default</span>:
-                <span style=color:#66d9ef>throw</span> <span style=color:#66d9ef>new</span> NotSupportedException();
-        }
-        <span style=color:#66d9ef>using</span> (System.Diagnostics.Process process = <span style=color:#66d9ef>new</span> System.Diagnostics.Process())
-        {
-            process.StartInfo.FileName = Path.GetFullPath(pathToTool);
-            process.StartInfo.Arguments = commandline;
-            process.StartInfo.WorkingDirectory = Path.GetDirectoryName(pathToTool);
-            process.StartInfo.WindowStyle = ProcessWindowStyle.Normal;
-            process.StartInfo.UseShellExecute = <span style=color:#66d9ef>false</span>;
-            <span style=color:#75715e>//process.StartInfo.ErrorDialog = false;
-</span><span style=color:#75715e></span>            <span style=color:#75715e>//process.StartInfo.CreateNoWindow = true;
-</span><span style=color:#75715e></span>            process.StartInfo.RedirectStandardOutput = <span style=color:#66d9ef>true</span>;
-            process.Start();
-            process.WaitForExit();
-            TfOutput = process.StandardOutput.ReadToEnd();
-        }
-        <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
-    }
-
-    <span style=color:#66d9ef>protected</span> <span style=color:#66d9ef>override</span> <span style=color:#66d9ef>string</span> GenerateFullPathToTool()
-    {
-        <span style=color:#66d9ef>throw</span> <span style=color:#66d9ef>new</span> NotImplementedException();
-    }
-
-    <span style=color:#66d9ef>protected</span> <span style=color:#66d9ef>override</span> <span style=color:#66d9ef>string</span> ToolName
-    {
-        <span style=color:#66d9ef>get</span> { <span style=color:#66d9ef>return</span> <span style=color:#e6db74>&#34;tf.exe&#34;</span>; }
-    }
-}
-
-<span style=color:#66d9ef>public</span> <span style=color:#66d9ef>enum</span> TfTaskOperation
-{
-    GetLatestChangeset = <span style=color:#ae81ff>0</span>,
-}
-</code></pre></td></tr></table></div></div><p>This is a simple wrapper to the tf.exe tool, and since I invoke it with the System.Diagnostic.Process class, <em>I&rsquo;m able to intercept the output</em>. There are a lot of possibilities on how to get latest changeset, but the simplest is to invoke tf.exe with a command line like this: <strong>tf.exe history /s:http://tfsalkampfer:8080 /stopafter:1 /noprompt /recursive /version:T $/MsBuildExtension</strong> This This command gives a result like this one.</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp>Changeset User          Date       Comment
---------- ------------- ---------- ---------------------------------
-<span style=color:#ae81ff>129</span>       TfsService    <span style=color:#ae81ff>8</span>/<span style=color:#ae81ff>21</span>/<span style=color:#ae81ff>2009</span>  * **NO_CI** *
-</code></pre></td></tr></table></div></div><p>That can be parsed with a simple regular expression, here is the remaining of the build script.</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-xml data-lang=xml><span style=color:#f92672>&lt;TfTask</span> 
-    <span style=color:#a6e22e>TfsUrl=</span><span style=color:#e6db74>&#34;$(TeamFoundationServerUrl)&#34;</span> 
-    <span style=color:#a6e22e>TeamProject=</span><span style=color:#e6db74>&#34;$(TeamProject)&#34;</span> 
-    <span style=color:#a6e22e>Operation=</span><span style=color:#e6db74>&#34;GetLatestChangeset&#34;</span><span style=color:#f92672>&gt;</span>
-    <span style=color:#f92672>&lt;Output</span>    <span style=color:#a6e22e>TaskParameter=</span><span style=color:#e6db74>&#34;TfOutput&#34;</span> <span style=color:#a6e22e>PropertyName=</span><span style=color:#e6db74>&#34;historyOutput&#34;</span><span style=color:#f92672>/&gt;</span>
-<span style=color:#f92672>&lt;/TfTask&gt;</span>
-
-<span style=color:#f92672>&lt;Message</span> <span style=color:#a6e22e>Text=</span><span style=color:#e6db74>&#34;historyOutput is $(historyOutput)&#34;</span> <span style=color:#f92672>/&gt;</span>
-
-<span style=color:#f92672>&lt;RegexTask</span> <span style=color:#a6e22e>TextToMatch=</span><span style=color:#e6db74>&#34;$(historyOutput)&#34;</span> <span style=color:#a6e22e>Regex=</span><span style=color:#e6db74>&#34;\n(?&amp;lt;changeset&amp;gt;\d+)&#34;</span> <span style=color:#a6e22e>FailIfNoMatch=</span><span style=color:#e6db74>&#34;true&#34;</span> <span style=color:#a6e22e>GroupName=</span><span style=color:#e6db74>&#34;changeset&#34;</span><span style=color:#f92672>&gt;</span>
-    <span style=color:#f92672>&lt;Output</span>
-         <span style=color:#a6e22e>TaskParameter=</span><span style=color:#e6db74>&#34;Result&#34;</span>
-         <span style=color:#a6e22e>PropertyName=</span><span style=color:#e6db74>&#34;lastChangeset&#34;</span><span style=color:#f92672>/&gt;</span>
-<span style=color:#f92672>&lt;/RegexTask&gt;</span>
-
-<span style=color:#f92672>&lt;AssemblyInfoVersionManagerTask</span>
-    <span style=color:#a6e22e>AssemblyInfoFileName=</span><span style=color:#e6db74>&#34;..\sources\src\ProjectVersion.cs&#34;</span>
-    <span style=color:#a6e22e>NewBuildNumber=</span><span style=color:#e6db74>&#34;$(NewVersionNumber)&#34;</span>
-    <span style=color:#a6e22e>NewRevisionNumber=</span><span style=color:#e6db74>&#34;$(lastChangeset)&#34;</span><span style=color:#f92672>&gt;</span>
-<span style=color:#f92672>&lt;/AssemblyInfoVersionManagerTask&gt;</span>
-
-<span style=color:#f92672>&lt;Exec</span> <span style=color:#a6e22e>Command=</span><span style=color:#e6db74>&#39;$(tfTool) checkin /comment:&#34;* **NO_CI** *&#34;..\sources\src\StandardBuildForCIVersion.txt&#39;</span> <span style=color:#f92672>/&gt;</span></code></pre></td></tr></table></div></div><p>IT is quite simple, I first invoke the TfTask, then I use a simple RegexTask to find the changeset number from tf output. Thanks to TfTask custom task, the script remains simple, I need only to specify tfsurl, team project name and the operation I want to execute (in this situation GetLatestChangeset), and the task will store in the <em>historyOutput</em> property the full output of the tf.exe command.</p><p>Finally I use my AssemblyInfoVersionManager task to change the ProjectVersion.cs file and finally I do a check-in of the file that contains the new generated sequential build number <em>with comment ***NO_CI*** to avoid going in loop with continuos integration engine</em>.</p><p>After a build you can verify that everything is gone ok.</p><p><a href=https://www.codewrecks.com/blog/wp-content/uploads/2009/08/image26.png><a target=_blank href=https://www.codewrecks.com/blog/wp-content/uploads/2009/08/image-thumb26.png><img src=https://www.codewrecks.com/blog/wp-content/uploads/2009/08/image-thumb26.png alt=image></a></a></p><p>Now if you deploy this assembly into a customer computer, if you have a problem in the future, you can immediately verify that this was compiled with the build called 8, then you check the StandardBuildForCIVersion.txt</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=color:#ae81ff>7</span>|Standard build <span style=color:#66d9ef>for</span> CI_20090820.<span style=color:#ae81ff>37</span>
-<span style=color:#ae81ff>8</span>|Standard build <span style=color:#66d9ef>for</span> CI_20090820.<span style=color:#ae81ff>39</span>
-<span style=color:#ae81ff>9</span>|Standard build <span style=color:#66d9ef>for</span> CI_20090821.<span style=color:#ae81ff>2</span>
-</code></pre></td></tr></table></div></div><p>You can immediately find the label of the build, but the most important thing in my opinion is the revision number, 128 in the picture above, because it is the changeset that generates this assembly, to replicate and debug any problem, you can simply do a Get Specific Version of that changeset, and you can work with the exact source code and build tools that generates that assembly.</p><p>This example shows how simple can be extending build process with the creation of some ad-hoc tasks and a good use of the tf.exe command line tool.</p><p>A zip of all the repository <a href=http://www.codewrecks.com/blog/storage/msbuildextension.zip>can be downloaded here</a>.</p><p>Alk.</p><p>Tags: <a href=http://technorati.com/tag/Team%20Foundation%20Server>Team Foundation Server</a> <a href=http://technorati.com/tag/MsBuild>MsBuild</a></p></div><footer class=entry-footer><div class="container sep-before"><div class=categories><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5A2 2 0 014 3H9l2 3h9a2 2 0 012 2z"/></svg><span class=screen-reader-text>Categories: </span><a class=category href=/categories/team-foundation-server/>Team Foundation Server</a></div><div class=tags><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83.0L2 12V2H12l8.59 8.59A2 2 0 0120.59 13.41z"/><line x1="7" y1="7" x2="7" y2="7"/></svg><span class=screen-reader-text>Tags: </span><a class=tag href=/tags/msbuild/>Msbuild</a>, <a class=tag href=/tags/teamfoundationserver/>TeamFoundationServer</a>, <a class=tag href=/tags/tfsbuild/>TfsBuild</a></div></div></footer></article><nav class=entry-nav><div class=container><div class="prev-entry sep-before">Leave comment in GitHub discussion page<a target=_blank href=https://github.com/alkampfergit/personal-blog/discussions> alkampfergit/personal-blog/discussions</a></div><div class="prev-entry sep-before"><a href=/post/old/2009/08/problem-with-tfs2010-beta-error-tf31002/><span aria-hidden=true>Previous</span>
-<span class=screen-reader-text>Previous post: </span>Problem with TFS2010 Beta error TF31002</a></div><div class="next-entry sep-before"><a href=/post/old/2009/08/browse-nhibernate-metadata-to-validate-property-length/><span class=screen-reader-text>Next post: </span>Browse NHibernate metadata to validate property Length<span aria-hidden=true>Next</span></a></div></div></nav></main><footer id=footer class=footer><div class="container sep-before"><section class="widget widget-social_menu sep-after"><nav aria-label="Social Menu"><ul><li><a href=https://github.com/alkampfergit target=_blank rel="noopener me"><span class=screen-reader-text>Open Github account in new tab</span><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37.0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44.0 0020 4.77 5.07 5.07.0 0019.91 1S18.73.65 16 2.48a13.38 13.38.0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07.0 005 4.77a5.44 5.44.0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37.0 009 18.13V22"/></svg></a></li><li><a href=https://twitter.com/alkampfer target=_blank rel="noopener me"><span class=screen-reader-text>Open Twitter account in new tab</span><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><path d="M23 3a10.9 10.9.0 01-3.14 1.53 4.48 4.48.0 00-7.86 3v1A10.66 10.66.0 013 4s-4 9 5 13a11.64 11.64.0 01-7 2c9 5 20 0 20-11.5a4.5 4.5.0 00-.08-.83A7.72 7.72.0 0023 3z"/></svg></a></li><li><a href=mailto:alkampfer@nablasoft.com target=_blank rel="noopener me"><span class=screen-reader-text>Contact via Email</span><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><path d="M4 4h16c1.1.0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1.0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></a></li><li><a href=https://linkedin.com/in/gianmariaricci target=_blank rel="noopener me"><span class=screen-reader-text>Open Linkedin account in new tab</span><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg></a></li></ul></nav></section><div class=copyright><p>&copy; 2020-2024 Ricci Gian Maria</p></div></div></footer></div></div><script>window.__assets_js_src="/assets/js/"</script><script src=/assets/js/main.c3bcf2df.js></script><script>console.log("this is cookie law");$(document).euCookieLawPopup().init({cookiePolicyUrl:'/privacy/',popupPosition:'top',colorStyle:'default',compactStyle:false,popupTitle:'This website is using cookies',popupText:'By continuing I assume your permission to deploy cookies, as detailed in the Privacy &amp; Cookies Policy.',buttonContinueTitle:'Continue',buttonLearnmoreTitle:'Learn more about this site Privacy &amp; Cookies Policy',buttonLearnmoreOpenInNewWindow:true,agreementExpiresInDays:30,autoAcceptCookiePolicy:false,htmlMarkup:null});</script></body></html>
+<span class=open><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+</span><span class=close><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span></button><ul><li class=item><a href=/>Home</a></li><li class=item><a href=/categories/>Categories</a></li><li class=item><a href=/about/>About</a></li><li class=item><a href=/git-videos/>Git Videos</a></li><li class=item><a href=/privacy/>Privacy</a></li><li class=item><a href=/youtube/>YouTube</a></li></ul></div></nav><div class=header-widgets><div class=container><style>.widget-breadcrumbs li:after{content:'\2f '}</style><section class='widget widget-breadcrumbs sep-after'><nav id=breadcrumbs><ol><li><a href=/>Home</a></li><li><a href=/post/>Posts</a></li><li><span>Take control of assembly numbering during a tfs build</span></li></ol></nav></section></div></div><header id=header class='header site-header'><div class='container sep-after'><div class=header-info><p class='site-title title'>Codewrecks</p><p class='desc site-desc'>Wrecks of code floating in the sea of internet</p></div></div></header><main id=content><article lang=en class=entry><header class='header entry-header'><div class='container sep-after'><div class=header-info><h1 class=title>Take control of assembly numbering during a tfs build</h1></div><div class=entry-meta><span class=posted-on><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+<span class=screen-reader-text>Posted on </span><time class=entry-date datetime=2009-08-21T06:00:37+02:00>2009, Aug 21</time>
+</span><span class=reading-time><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 15 15"/></svg>
+9 mins read</span></div></div></header><div class='container entry-content'><p>One of the most important stuff in a project build, is <em>the ability to mark the assemblies with unique numbers that permits us to reproduce the build</em>. Tfs does not have a standard way of doing this, but with a couple of MsBuild actions it is really simple to overcome this limitation. This is a good example that shows how you can extend build script to do complex task.</p><p>First of all I want to change only <a href=http://msdn.microsoft.com/en-us/library/system.reflection.assemblyfileversionattribute.aspx>AssemblyFileVersion</a> and not the AssemblyVersion, in this way all builds are compatible until someone manually changes AssemblyVersion. A standard technique I like very much is letting the programmers to <em>manage major and minor number manually</em>, and <em>letting my builds generates build and revision ones</em>. For build number I want to be able to generate a unique number each build, a sequential generator will be fine; but for revision number I want to use the changeset used to generate the build. To accomplish this we need essentially four macro steps.</p><p><a target=_blank href=http://yuml.me/45c1d876><img src=http://yuml.me/45c1d876 alt="External Image"></a></p><p>In the first step I need to generate unique integer build number, most of the time sequential generator is ok, then I need also to find a way to correlate this generated number with the build label of the TFS. Step two is used to find latest changeset, then in step three we need to check-in modified files (the one used by the generator), being sure that this check-in does not trigger another build, finally we need to modify a file named ProjectVersion.cs that is used by all projects.</p><p>To modify AssemblyFileVersion for a project I love this technique: I remove AssemblyFileVersion and AssemblyVersion attributes from assemblyinfo.cs, put them in a single <strong>ProjectVersion.cs</strong> file stored in the root of the team project. Here is a typical content for the ProjectVersion.cs.</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=display:flex><span><span style=color:#66d9ef>using</span> System.Reflection;
+</span></span><span style=display:flex><span><span style=color:#a6e22e>[assembly: AssemblyVersion(&#34;1.2.0.0&#34;)]</span>
+</span></span><span style=display:flex><span><span style=color:#a6e22e>[assembly: AssemblyFileVersion(&#34;1.2.0.0&#34;)]</span></span></span></code></pre></td></tr></table></div></div><p>Next I import this file as link in every project that belong to this team project</p><p><a href=https://www.codewrecks.com/blog/wp-content/uploads/2009/08/image25.png><a target=_blank href=https://www.codewrecks.com/blog/wp-content/uploads/2009/08/image-thumb25.png><img src=https://www.codewrecks.com/blog/wp-content/uploads/2009/08/image-thumb25.png alt=image></a></a></p><p>With this little trick to change AssemblyFileVersion attribute for every project I<em>need only to change one file.</em> Now it is time to build some custom tasks that will help us to manage the whole process, first of all the task that generates unique numbers and correlate them with build label.</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">36
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">37
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">38
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">39
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">40
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">41
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">42
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">43
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">44
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">45
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">46
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">47
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">48
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">49
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">50
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">51
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-CSharp data-lang=CSharp><span style=display:flex><span><span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>BuildVersionNumberManagerTask</span> : Task
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    <span style=color:#75715e>/// &lt;summary&gt;</span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>/// Filename that will store the versions</span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>/// &lt;/summary&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#a6e22e>    [Required]</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> String VersionFileName { <span style=color:#66d9ef>get</span>; <span style=color:#66d9ef>set</span>; }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>/// &lt;summary&gt;</span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>/// label of the current build.</span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>/// &lt;/summary&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#a6e22e>    [Required]</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> String BuildLabel { <span style=color:#66d9ef>get</span>; <span style=color:#66d9ef>set</span>; }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>/// &lt;summary&gt;</span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>/// new incremental version numer.</span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>/// &lt;/summary&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#a6e22e>    [Output]</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> Int32 NewVersionNumber { <span style=color:#66d9ef>get</span>; <span style=color:#66d9ef>set</span>; }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>override</span> <span style=color:#66d9ef>bool</span> Execute()
+</span></span><span style=display:flex><span>    {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (!File.Exists(VersionFileName))
+</span></span><span style=display:flex><span>        {
+</span></span><span style=display:flex><span>            Log.LogError(<span style=color:#e6db74>&#34;The file {0}[{1}] with version number does not exists&#34;</span>, VersionFileName, Path.GetFullPath(VersionFileName));
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>false</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        String[] allLines = File.ReadAllLines(VersionFileName);
+</span></span><span style=display:flex><span>        String startChar = <span style=color:#e6db74>&#34;&#34;</span>;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (allLines.Length &gt; <span style=color:#ae81ff>0</span> &amp;&amp; !String.IsNullOrEmpty(allLines[allLines.Length - <span style=color:#ae81ff>1</span>]))
+</span></span><span style=display:flex><span>        {
+</span></span><span style=display:flex><span>            startChar = <span style=color:#e6db74>&#34;\n&#34;</span>;
+</span></span><span style=display:flex><span>            String lastline = allLines[allLines.Length - <span style=color:#ae81ff>1</span>];
+</span></span><span style=display:flex><span>            String lastNum = lastline.Substring(<span style=color:#ae81ff>0</span>, lastline.IndexOf(<span style=color:#e6db74>&#34;|&#34;</span>));
+</span></span><span style=display:flex><span>            Int32 lastNumber;
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> (!Int32.TryParse(lastNum, <span style=color:#66d9ef>out</span> lastNumber))
+</span></span><span style=display:flex><span>            {
+</span></span><span style=display:flex><span>                Log.LogError(<span style=color:#e6db74>&#34;There are errors in the version file, the last line does not contains lastnum|lastlabel valid format&#34;</span>);
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>false</span>;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            NewVersionNumber = lastNumber + <span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span>        } <span style=color:#66d9ef>else</span>
+</span></span><span style=display:flex><span>        {
+</span></span><span style=display:flex><span>            <span style=color:#75715e>//There is no lines, or the last line is empty.</span>
+</span></span><span style=display:flex><span>            NewVersionNumber = <span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        String newLastLine = String.Format(<span style=color:#e6db74>&#34;{0}{1}|{2}&#34;</span>,startChar,  NewVersionNumber, BuildLabel);
+</span></span><span style=display:flex><span>        File.AppendAllText(VersionFileName, newLastLine);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>true</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}</span></span></code></pre></td></tr></table></div></div><p>The BuildVersionNumberManagerTask is responsible of the generation of a sequential number, as well as storing in a file the relationship between autogenerated numbers and build labels. It use a simple text file and write a line for each generated number. Here is an example of file content.</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=display:flex><span>...
+</span></span><span style=display:flex><span><span style=color:#ae81ff>3</span>|Standard build <span style=color:#66d9ef>for</span> CI_20090820.<span style=color:#ae81ff>20</span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>4</span>|Standard build <span style=color:#66d9ef>for</span> CI_20090820.<span style=color:#ae81ff>21</span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>5</span>|Standard build <span style=color:#66d9ef>for</span> CI_20090820.<span style=color:#ae81ff>24</span>
+</span></span><span style=display:flex><span>...</span></span></code></pre></td></tr></table></div></div><p>With such a technique, we can immediately find the build label associated with each auto generated number. Now if you have problem with an assembly that have 4 as the build number, I immediately find in the file that it was build by * <strong>Standard build for CI_20090820.21</strong> * Here is how I call this task into TFSBuild.proj file</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-xml data-lang=xml><span style=display:flex><span><span style=color:#f92672>&lt;PropertyGroup&gt;</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>&lt;tfTool&gt;</span>&#34;C:\Program Files\Microsoft Visual Studio 9.0\Common7\IDE\tf.exe&#34;<span style=color:#f92672>&lt;/tfTool&gt;</span>
+</span></span><span style=display:flex><span>       ...
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;Target</span> <span style=color:#a6e22e>Name=</span><span style=color:#e6db74>&#34;BeforeCompile&#34;</span> <span style=color:#a6e22e>Condition=</span><span style=color:#e6db74>&#34; &#39;$(IsDesktopBuild)&#39; != &#39;true&#39; &#34;</span><span style=color:#f92672>&gt;</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>&lt;Message</span> <span style=color:#a6e22e>Text=</span><span style=color:#e6db74>&#34;Beginning generation of new AssemblyFileVersionAttribute&#34;</span> <span style=color:#f92672>/&gt;</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>&lt;Exec</span> <span style=color:#a6e22e>Command=</span><span style=color:#e6db74>&#34;$(tfTool) checkout..\sources\src\StandardBuildForCIVersion.txt&#34;</span>  <span style=color:#f92672>/&gt;</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>&lt;BuildVersionNumberManagerTask</span>
+</span></span><span style=display:flex><span>            <span style=color:#a6e22e>VersionFileName=</span><span style=color:#e6db74>&#34;..\sources\src\StandardBuildForCIVersion.txt&#34;</span>
+</span></span><span style=display:flex><span>            <span style=color:#a6e22e>BuildLabel=</span><span style=color:#e6db74>&#34;$(BuildNumber)&#34;</span><span style=color:#f92672>&gt;</span>
+</span></span><span style=display:flex><span>            <span style=color:#f92672>&lt;Output</span> <span style=color:#a6e22e>TaskParameter=</span><span style=color:#e6db74>&#34;NewVersionNumber&#34;</span> <span style=color:#a6e22e>PropertyName=</span><span style=color:#e6db74>&#34;NewVersionNumber&#34;</span> <span style=color:#f92672>/&gt;</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>&lt;/BuildVersionNumberManagerTask&gt;</span></span></span></code></pre></td></tr></table></div></div><p>I override the BeforeCompile task, since I need to change version number before the compile phase. As you can see <em>I use the Exex command to call the tf.exe tool to checkout the file</em> * <strong>StandardBuildForCIVersion.txt</strong> *, the one used to store autogenerated numbers. In this way I can use a different file for each build definition or I can use same file for different builds, I have great flexibility. The checkout is needed because I want to check in modified file at the end of the process, in this way the autogenerated number can be accessed from other build agents. Then I need another custom task capable to modify the ProjectVersion.cs file.</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">36
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">37
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">38
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">39
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-CSharp data-lang=CSharp><span style=display:flex><span><span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>AssemblyInfoVersionManagerTask</span> : Task
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span><span style=color:#a6e22e>    [Required]</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> String AssemblyInfoFileName { <span style=color:#66d9ef>get</span>; <span style=color:#66d9ef>set</span>; }
+</span></span><span style=display:flex><span><span style=color:#a6e22e>
+</span></span></span><span style=display:flex><span><span style=color:#a6e22e>    [Required]</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> Int32 NewBuildNumber { <span style=color:#66d9ef>get</span>; <span style=color:#66d9ef>set</span>; }
+</span></span><span style=display:flex><span><span style=color:#a6e22e>
+</span></span></span><span style=display:flex><span><span style=color:#a6e22e>    [Required]</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> Int32 NewRevisionNumber { <span style=color:#66d9ef>get</span>; <span style=color:#66d9ef>set</span>; }
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>override</span> <span style=color:#66d9ef>bool</span> Execute()
+</span></span><span style=display:flex><span>    {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (!File.Exists(AssemblyInfoFileName))
+</span></span><span style=display:flex><span>        {
+</span></span><span style=display:flex><span>            Log.LogError(<span style=color:#e6db74>&#34;The file {0} does not exists&#34;</span>, AssemblyInfoFileName);
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>false</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        String filecontent = File.ReadAllText(AssemblyInfoFileName);
+</span></span><span style=display:flex><span>        Match curVersionMatch =
+</span></span><span style=display:flex><span>            Regex.Match(filecontent, <span style=color:#e6db74>&#34;AssemblyVersion\\(\&#34;(?&lt;curversion&gt;.*?)\&#34;\\)&#34;</span>);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (!curVersionMatch.Success)
+</span></span><span style=display:flex><span>        {
+</span></span><span style=display:flex><span>            Log.LogError(<span style=color:#e6db74>&#34;The content of file {0} does not contains valid Assemblyversion attribute&#34;</span>);
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>false</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        String curversion = curVersionMatch.Groups[<span style=color:#e6db74>&#34;curversion&#34;</span>].Value;
+</span></span><span style=display:flex><span>        String[] versionParts = curversion.Split(<span style=color:#e6db74>&#39;.&#39;</span>);
+</span></span><span style=display:flex><span>        String newVersion = String.Format(<span style=color:#e6db74>&#34;{0}.{1}.{2}.{3}&#34;</span>, versionParts[<span style=color:#ae81ff>0</span>], versionParts[<span style=color:#ae81ff>1</span>], NewBuildNumber, NewRevisionNumber);
+</span></span><span style=display:flex><span>        String newFileContent = Regex.Replace(
+</span></span><span style=display:flex><span>            filecontent,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;AssemblyFileVersion\\(\&#34;(?&lt;curversion&gt;.*?)\&#34;\\)&#34;</span>,
+</span></span><span style=display:flex><span>            String.Format(<span style=color:#e6db74>@&#34;AssemblyFileVersion(&#34;&#34;{0}&#34;&#34;)&#34;</span>, newVersion));
+</span></span><span style=display:flex><span>        FileAttributes currentFileAttributes = File.GetAttributes(AssemblyInfoFileName);
+</span></span><span style=display:flex><span>        File.SetAttributes(AssemblyInfoFileName, FileAttributes.Normal);
+</span></span><span style=display:flex><span>        File.WriteAllText(AssemblyInfoFileName, newFileContent);
+</span></span><span style=display:flex><span>        File.SetAttributes(AssemblyInfoFileName, currentFileAttributes);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>true</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}</span></span></code></pre></td></tr></table></div></div><p>This is another simple task, it uses a little bit of regular expression to find actual version number stored in the ProjectVersion.cs, then it creates another version number with simple composition. <strong>Major and minor number are taken from the original content, while build and revision are passed by the caller</strong>. Remember also to remove the Readonly attribute from the file, because it is usually readonly since it is under version control. Now I need the last piece, a simple TfTask that permits me to grab the changeset number associated with the current project.</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">36
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">37
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">38
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">39
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">40
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">41
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">42
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">43
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">44
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">45
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">46
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">47
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">48
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">49
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">50
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">51
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">52
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">53
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">54
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">55
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">56
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">57
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">58
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">59
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">60
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">61
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">62
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-CSharp data-lang=CSharp><span style=display:flex><span><span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>TfTask</span> : ToolTask
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> TfTask()
+</span></span><span style=display:flex><span>    {
+</span></span><span style=display:flex><span>        ToolPath = <span style=color:#e6db74>@&#34;C:\Program Files\Microsoft Visual Studio 9.0\Common7\IDE\&#34;</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span><span style=color:#a6e22e>
+</span></span></span><span style=display:flex><span><span style=color:#a6e22e>    [Required]</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> String Operation { <span style=color:#66d9ef>get</span>; <span style=color:#66d9ef>set</span>; }
+</span></span><span style=display:flex><span><span style=color:#a6e22e>
+</span></span></span><span style=display:flex><span><span style=color:#a6e22e>    [Output]</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> String TfOutput { <span style=color:#66d9ef>get</span>; <span style=color:#66d9ef>set</span>; }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> String TfsUrl { <span style=color:#66d9ef>get</span>; <span style=color:#66d9ef>set</span>; }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> String TeamProject { <span style=color:#66d9ef>get</span>; <span style=color:#66d9ef>set</span>; }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>protected</span> <span style=color:#66d9ef>override</span> <span style=color:#66d9ef>int</span> ExecuteTool(<span style=color:#66d9ef>string</span> pathToTool, <span style=color:#66d9ef>string</span> responseFileCommands, <span style=color:#66d9ef>string</span> commandLineCommands)
+</span></span><span style=display:flex><span>    {
+</span></span><span style=display:flex><span>        TfTaskOperation operation = (TfTaskOperation)Enum.Parse(<span style=color:#66d9ef>typeof</span>(TfTaskOperation), Operation);
+</span></span><span style=display:flex><span>        String commandline;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>switch</span> (operation)
+</span></span><span style=display:flex><span>        {
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>case</span> TfTaskOperation.GetLatestChangeset:
+</span></span><span style=display:flex><span>                commandline = String.Format(
+</span></span><span style=display:flex><span>                    <span style=color:#e6db74>&#34;history /s:{0} /stopafter:1 /noprompt /recursive /version:T $/{1}&#34;</span>, TfsUrl, TeamProject);
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>break</span>;
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>default</span>:
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>throw</span> <span style=color:#66d9ef>new</span> NotSupportedException();
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>using</span> (System.Diagnostics.Process process = <span style=color:#66d9ef>new</span> System.Diagnostics.Process())
+</span></span><span style=display:flex><span>        {
+</span></span><span style=display:flex><span>            process.StartInfo.FileName = Path.GetFullPath(pathToTool);
+</span></span><span style=display:flex><span>            process.StartInfo.Arguments = commandline;
+</span></span><span style=display:flex><span>            process.StartInfo.WorkingDirectory = Path.GetDirectoryName(pathToTool);
+</span></span><span style=display:flex><span>            process.StartInfo.WindowStyle = ProcessWindowStyle.Normal;
+</span></span><span style=display:flex><span>            process.StartInfo.UseShellExecute = <span style=color:#66d9ef>false</span>;
+</span></span><span style=display:flex><span>            <span style=color:#75715e>//process.StartInfo.ErrorDialog = false;</span>
+</span></span><span style=display:flex><span>            <span style=color:#75715e>//process.StartInfo.CreateNoWindow = true;</span>
+</span></span><span style=display:flex><span>            process.StartInfo.RedirectStandardOutput = <span style=color:#66d9ef>true</span>;
+</span></span><span style=display:flex><span>            process.Start();
+</span></span><span style=display:flex><span>            process.WaitForExit();
+</span></span><span style=display:flex><span>            TfOutput = process.StandardOutput.ReadToEnd();
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>protected</span> <span style=color:#66d9ef>override</span> <span style=color:#66d9ef>string</span> GenerateFullPathToTool()
+</span></span><span style=display:flex><span>    {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>throw</span> <span style=color:#66d9ef>new</span> NotImplementedException();
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>protected</span> <span style=color:#66d9ef>override</span> <span style=color:#66d9ef>string</span> ToolName
+</span></span><span style=display:flex><span>    {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>get</span> { <span style=color:#66d9ef>return</span> <span style=color:#e6db74>&#34;tf.exe&#34;</span>; }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span> <span style=color:#66d9ef>enum</span> TfTaskOperation
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    GetLatestChangeset = <span style=color:#ae81ff>0</span>,
+</span></span><span style=display:flex><span>}</span></span></code></pre></td></tr></table></div></div><p>This is a simple wrapper to the tf.exe tool, and since I invoke it with the System.Diagnostic.Process class, <em>I&rsquo;m able to intercept the output</em>. There are a lot of possibilities on how to get latest changeset, but the simplest is to invoke tf.exe with a command line like this: <strong>tf.exe history /s:http://tfsalkampfer:8080 /stopafter:1 /noprompt /recursive /version:T $/MsBuildExtension</strong> This This command gives a result like this one.</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=display:flex><span>Changeset User          Date       Comment
+</span></span><span style=display:flex><span>--------- ------------- ---------- ---------------------------------
+</span></span><span style=display:flex><span><span style=color:#ae81ff>129</span>       TfsService    <span style=color:#ae81ff>8</span>/<span style=color:#ae81ff>21</span>/<span style=color:#ae81ff>2009</span>  * **NO_CI** *</span></span></code></pre></td></tr></table></div></div><p>That can be parsed with a simple regular expression, here is the remaining of the build script.</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-xml data-lang=xml><span style=display:flex><span><span style=color:#f92672>&lt;TfTask</span> 
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>TfsUrl=</span><span style=color:#e6db74>&#34;$(TeamFoundationServerUrl)&#34;</span> 
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>TeamProject=</span><span style=color:#e6db74>&#34;$(TeamProject)&#34;</span> 
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Operation=</span><span style=color:#e6db74>&#34;GetLatestChangeset&#34;</span><span style=color:#f92672>&gt;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>&lt;Output</span>    <span style=color:#a6e22e>TaskParameter=</span><span style=color:#e6db74>&#34;TfOutput&#34;</span> <span style=color:#a6e22e>PropertyName=</span><span style=color:#e6db74>&#34;historyOutput&#34;</span><span style=color:#f92672>/&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;/TfTask&gt;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;Message</span> <span style=color:#a6e22e>Text=</span><span style=color:#e6db74>&#34;historyOutput is $(historyOutput)&#34;</span> <span style=color:#f92672>/&gt;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;RegexTask</span> <span style=color:#a6e22e>TextToMatch=</span><span style=color:#e6db74>&#34;$(historyOutput)&#34;</span> <span style=color:#a6e22e>Regex=</span><span style=color:#e6db74>&#34;\n(?&amp;lt;changeset&amp;gt;\d+)&#34;</span> <span style=color:#a6e22e>FailIfNoMatch=</span><span style=color:#e6db74>&#34;true&#34;</span> <span style=color:#a6e22e>GroupName=</span><span style=color:#e6db74>&#34;changeset&#34;</span><span style=color:#f92672>&gt;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>&lt;Output</span>
+</span></span><span style=display:flex><span>         <span style=color:#a6e22e>TaskParameter=</span><span style=color:#e6db74>&#34;Result&#34;</span>
+</span></span><span style=display:flex><span>         <span style=color:#a6e22e>PropertyName=</span><span style=color:#e6db74>&#34;lastChangeset&#34;</span><span style=color:#f92672>/&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;/RegexTask&gt;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;AssemblyInfoVersionManagerTask</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>AssemblyInfoFileName=</span><span style=color:#e6db74>&#34;..\sources\src\ProjectVersion.cs&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>NewBuildNumber=</span><span style=color:#e6db74>&#34;$(NewVersionNumber)&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>NewRevisionNumber=</span><span style=color:#e6db74>&#34;$(lastChangeset)&#34;</span><span style=color:#f92672>&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;/AssemblyInfoVersionManagerTask&gt;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;Exec</span> <span style=color:#a6e22e>Command=</span><span style=color:#e6db74>&#39;$(tfTool) checkin /comment:&#34;* **NO_CI** *&#34;..\sources\src\StandardBuildForCIVersion.txt&#39;</span> <span style=color:#f92672>/&gt;</span></span></span></code></pre></td></tr></table></div></div><p>IT is quite simple, I first invoke the TfTask, then I use a simple RegexTask to find the changeset number from tf output. Thanks to TfTask custom task, the script remains simple, I need only to specify tfsurl, team project name and the operation I want to execute (in this situation GetLatestChangeset), and the task will store in the <em>historyOutput</em> property the full output of the tf.exe command.</p><p>Finally I use my AssemblyInfoVersionManager task to change the ProjectVersion.cs file and finally I do a check-in of the file that contains the new generated sequential build number <em>with comment ***NO_CI*** to avoid going in loop with continuos integration engine</em>.</p><p>After a build you can verify that everything is gone ok.</p><p><a href=https://www.codewrecks.com/blog/wp-content/uploads/2009/08/image26.png><a target=_blank href=https://www.codewrecks.com/blog/wp-content/uploads/2009/08/image-thumb26.png><img src=https://www.codewrecks.com/blog/wp-content/uploads/2009/08/image-thumb26.png alt=image></a></a></p><p>Now if you deploy this assembly into a customer computer, if you have a problem in the future, you can immediately verify that this was compiled with the build called 8, then you check the StandardBuildForCIVersion.txt</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=display:flex><span><span style=color:#ae81ff>7</span>|Standard build <span style=color:#66d9ef>for</span> CI_20090820.<span style=color:#ae81ff>37</span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>8</span>|Standard build <span style=color:#66d9ef>for</span> CI_20090820.<span style=color:#ae81ff>39</span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>9</span>|Standard build <span style=color:#66d9ef>for</span> CI_20090821.<span style=color:#ae81ff>2</span></span></span></code></pre></td></tr></table></div></div><p>You can immediately find the label of the build, but the most important thing in my opinion is the revision number, 128 in the picture above, because it is the changeset that generates this assembly, to replicate and debug any problem, you can simply do a Get Specific Version of that changeset, and you can work with the exact source code and build tools that generates that assembly.</p><p>This example shows how simple can be extending build process with the creation of some ad-hoc tasks and a good use of the tf.exe command line tool.</p><p>A zip of all the repository <a href=http://www.codewrecks.com/blog/storage/msbuildextension.zip>can be downloaded here</a>.</p><p>Alk.</p><p>Tags: <a href=http://technorati.com/tag/Team%20Foundation%20Server>Team Foundation Server</a> <a href=http://technorati.com/tag/MsBuild>MsBuild</a></p></div><footer class=entry-footer><div class='container sep-before'><div class=categories><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5A2 2 0 014 3H9l2 3h9a2 2 0 012 2z"/></svg>
+<span class=screen-reader-text>Categories: </span><a class=category href=/categories/team-foundation-server/>Team Foundation Server</a></div><div class=tags><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83.0L2 12V2H12l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7" y2="7"/></svg>
+<span class=screen-reader-text>Tags: </span><a class=tag href=/tags/msbuild/>Msbuild</a>, <a class=tag href=/tags/teamfoundationserver/>TeamFoundationServer</a>, <a class=tag href=/tags/tfsbuild/>TfsBuild</a></div></div></footer></article><nav class=entry-nav><div class=container><div class='prev-entry sep-before'>Leave comment in GitHub discussion page<a target=_blank href=https://github.com/alkampfergit/personal-blog/discussions> alkampfergit/personal-blog/discussions</a></div><div class='prev-entry sep-before'><a href=/post/old/2009/08/problem-with-tfs2010-beta-error-tf31002/><span aria-hidden=true>Previous</span>
+<span class=screen-reader-text>Previous post: </span>Problem with TFS2010 Beta error TF31002</a></div><div class='next-entry sep-before'><a href=/post/old/2009/08/browse-nhibernate-metadata-to-validate-property-length/><span class=screen-reader-text>Next post: </span>Browse NHibernate metadata to validate property Length<span aria-hidden=true>Next</span></a></div></div></nav></main><footer id=footer class=footer><div class='container sep-before'><section class='widget widget-social_menu sep-after'><nav aria-label='Social Menu'><ul><li><a href=https://github.com/alkampfergit target=_blank rel='noopener me'><span class=screen-reader-text>Open Github account in new tab</span><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37.0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44.0 0020 4.77 5.07 5.07.0 0019.91 1S18.73.65 16 2.48a13.38 13.38.0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07.0 005 4.77 5.44 5.44.0 003.5 8.55c0 5.42 3.3 6.61 6.44 7A3.37 3.37.0 009 18.13V22"/></svg></a></li><li><a href=https://twitter.com/alkampfer target=_blank rel='noopener me'><span class=screen-reader-text>Open Twitter account in new tab</span><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><path d="M23 3a10.9 10.9.0 01-3.14 1.53 4.48 4.48.0 00-7.86 3v1A10.66 10.66.0 013 4s-4 9 5 13a11.64 11.64.0 01-7 2c9 5 20 0 20-11.5a4.5 4.5.0 00-.08-.83A7.72 7.72.0 0023 3z"/></svg></a></li><li><a href=mailto:alkampfer@nablasoft.com target=_blank rel='noopener me'><span class=screen-reader-text>Contact via Email</span><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><path d="M4 4h16c1.1.0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1.0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></a></li><li><a href=https://linkedin.com/in/gianmariaricci target=_blank rel='noopener me'><span class=screen-reader-text>Open Linkedin account in new tab</span><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg></a></li></ul></nav></section><div class=copyright><p>&copy; 2020-2024 Ricci Gian Maria</p></div></div></footer></div></div><script>window.__assets_js_src="/assets/js/"</script><script src=/assets/js/main.c3bcf2df.js></script><script>console.log("this is cookie law"),$(document).euCookieLawPopup().init({cookiePolicyUrl:"/privacy/",popupPosition:"top",colorStyle:"default",compactStyle:!1,popupTitle:"This website is using cookies",popupText:"By continuing I assume your permission to deploy cookies, as detailed in the Privacy &amp; Cookies Policy.",buttonContinueTitle:"Continue",buttonLearnmoreTitle:"Learn more about this site Privacy &amp; Cookies Policy",buttonLearnmoreOpenInNewWindow:!0,agreementExpiresInDays:30,autoAcceptCookiePolicy:!1,htmlMarkup:null})</script></body></html>
