@@ -1,10 +1,14 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>SpringNET on Codewrecks</title><link>https://www.codewrecks.com/categories/springnet/</link><description>Recent content in SpringNET on Codewrecks</description><generator>Hugo</generator><language>en</language><lastBuildDate>Tue, 03 Jul 2007 07:00:37 +0200</lastBuildDate><atom:link href="https://www.codewrecks.com/categories/springnet/index.xml" rel="self" type="application/rss+xml"/><item><title>Spring and AOP proxy lifecycle</title><link>https://www.codewrecks.com/post/old/2007/07/spring-and-aop-proxy-lifecycle/</link><pubDate>Tue, 03 Jul 2007 07:00:37 +0200</pubDate><guid>https://www.codewrecks.com/post/old/2007/07/spring-and-aop-proxy-lifecycle/</guid><description>Spring.Net is a great library, with interesting capabilities for AOP. Here is some suggestion on how to handle lifecycle of proxyed object. Suppose you have a Order object with virtual methods and you want to add an aspect with spring.NET. Suppose also that you have created an interceptor, a possible spring configuration is the following
-&amp;lt;objectid=“OrderTarget“type=“Domain.Order, Domain“singleton=“false“ /&amp;gt;
-&amp;lt;objectid=“myOrderInterceptor“type=“AopSample.OrderAdvice, AopSample“&amp;gt;
-&amp;lt;propertyname=“AutomaticOrderMaxAmount“value=“1000“ /&amp;gt;
-&amp;lt;/object&amp;gt;
-&amp;lt;objectid=“Order“
-type=“Spring.Aop.Framework.ProxyFactoryObject, Spring.Aop“&amp;gt;
-&amp;lt;propertyname=“Target“ref=“OrderTarget“ /&amp;gt;
-&amp;lt;propertyname=“interceptorNames“&amp;gt;
-&amp;lt;list&amp;gt;</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>SpringNET on Codewrecks</title><link>https://www.codewrecks.com/categories/springnet/</link><description>Recent content in SpringNET on Codewrecks</description><generator>Hugo</generator><language>en</language><lastBuildDate>Tue, 03 Jul 2007 07:00:37 +0200</lastBuildDate><atom:link href="https://www.codewrecks.com/categories/springnet/index.xml" rel="self" type="application/rss+xml"/><item><title>Spring and AOP proxy lifecycle</title><link>https://www.codewrecks.com/post/old/2007/07/spring-and-aop-proxy-lifecycle/</link><pubDate>Tue, 03 Jul 2007 07:00:37 +0200</pubDate><guid>https://www.codewrecks.com/post/old/2007/07/spring-and-aop-proxy-lifecycle/</guid><description>&lt;p>Spring.Net is a great library, with interesting capabilities for AOP. Here is some suggestion on how to handle lifecycle of proxyed object. Suppose you have a Order object with virtual methods and you want to add an aspect with spring.NET. Suppose also that you have created an interceptor, a possible spring configuration is the following&lt;/p>
+&lt;p>&amp;lt;objectid=“OrderTarget“type=“Domain.Order, Domain“singleton=“false“ /&amp;gt;&lt;/p>
+&lt;p>&amp;lt;objectid=“myOrderInterceptor“type=“AopSample.OrderAdvice, AopSample“&amp;gt;&lt;br>
+&amp;lt;propertyname=“AutomaticOrderMaxAmount“value=“1000“ /&amp;gt;&lt;br>
+&amp;lt;/object&amp;gt;&lt;/p>
+&lt;p>&amp;lt;objectid=“Order“&lt;br>
+type=“Spring.Aop.Framework.ProxyFactoryObject, Spring.Aop“&amp;gt;&lt;br>
+&amp;lt;propertyname=“Target“ref=“OrderTarget“ /&amp;gt;&lt;br>
+&amp;lt;propertyname=“interceptorNames“&amp;gt;&lt;br>
+&amp;lt;list&amp;gt;&lt;br>
+&amp;lt;value&amp;gt;myOrderInterceptor&amp;lt;/value&amp;gt;&lt;br>
+&amp;lt;/list&amp;gt;&lt;br>
+&amp;lt;/property&amp;gt;&lt;br>
+&amp;lt;/object&amp;gt;&lt;/p></description></item></channel></rss>

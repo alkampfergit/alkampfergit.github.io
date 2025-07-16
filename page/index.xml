@@ -1,9 +1,56 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Pages on Codewrecks</title><link>https://www.codewrecks.com/page/</link><description>Recent content in Pages on Codewrecks</description><generator>Hugo</generator><language>en</language><atom:link href="https://www.codewrecks.com/page/index.xml" rel="self" type="application/rss+xml"/><item><title>About</title><link>https://www.codewrecks.com/about/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://www.codewrecks.com/about/</guid><description>My name is Gian Maria and I was born with a huge interest for computers and everything related, basically I&amp;rsquo;m a geek. I started playing with my first computer, a commodore Vic20 and I discovered that I really like programming. I had only 3.5 KB of memory for my programs and It seemed to me that computers will really change my life*.
-I begin programming in Vic20 BASIC, then BASIC80, then I studied Pascal, Fortran (a little bit), a little bit of prolog and Cobol.</description></item><item><title>Git Videos</title><link>https://www.codewrecks.com/git-videos/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://www.codewrecks.com/git-videos/</guid><description>I&amp;rsquo;ve started to create some Git related videos in my YouTube profile, this post will collect all of them for easier access.
-Code that I&amp;rsquo;ve shown in these video available on GitHub. I&amp;rsquo;ve also some code that is used in these videos available also on GitHub that also contains a small Wiki with some recap on the various commands/concepts explained in the videos.
-Git Internals First Command: Hash Object. YouTube Video More on Hash Object and Cat-File command.</description></item><item><title>Privacy</title><link>https://www.codewrecks.com/privacy/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://www.codewrecks.com/privacy/</guid><description>List of Cookies used in this site Google Analytics cookies: __utma, __utmb, __utmc, __utmv, __utmz, used to gather site statistic usage. You can read more info on Google Policies on: How Google uses data when you use our partners’ sites or apps and Safeguarding your Data.
-Google AdSense cookies: domain googleads.g.doubleclick.net, TCID, __gads, drt, id, tc_cj_v2. All of them are third party cookies used to track down ads preference and create targeted ads for the user.</description></item><item><title>YouTube</title><link>https://www.codewrecks.com/youtube/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://www.codewrecks.com/youtube/</guid><description>Yubikey I&amp;rsquo;ve a playlist in which I examine Yubikey usage, from standard passkeys, to use as 2FA with standard TOTP, etc. You can find the channel here.
-Yubikey playlist
-Semantic Kernel, RAG and other stuff about AI I&amp;rsquo;ve some video about Semantic Kernel where I&amp;rsquo;m exploring the basic of the library and some practical scenarios
-Semantic Kernel Playlist
-I&amp;rsquo;ve started some videos about RAG. This is the list of the video you can find on my YouTube Channel.</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Pages on Codewrecks</title><link>https://www.codewrecks.com/page/</link><description>Recent content in Pages on Codewrecks</description><generator>Hugo</generator><language>en</language><atom:link href="https://www.codewrecks.com/page/index.xml" rel="self" type="application/rss+xml"/><item><title>About</title><link>https://www.codewrecks.com/about/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://www.codewrecks.com/about/</guid><description>&lt;p>My name is Gian Maria and I was born with a huge interest for computers and everything related, basically I&amp;rsquo;m a geek. I started playing with my first computer, a commodore Vic20 and I discovered that I really like programming. &lt;em>I had only 3.5 KB of memory for my programs and It seemed to me that computers will really change my life&lt;/em>*.&lt;/p>
+&lt;p>I begin programming in Vic20 BASIC, then BASIC80, then I studied Pascal, Fortran (a little bit), a little bit of prolog and Cobol. When I went to university I began studying C and C++ and began to have great interest in Computer Graphics. You can find some of my works at &lt;a href="http://www.nablasoft.com">www.nablasoft.com&lt;/a>, but most of them are in Italian (sorry guys ;) ).&lt;/p></description></item><item><title>Git Videos</title><link>https://www.codewrecks.com/git-videos/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://www.codewrecks.com/git-videos/</guid><description>&lt;p>I&amp;rsquo;ve started to create some Git related videos in my YouTube profile, this post will collect all of them for easier access.&lt;/p>
+&lt;p>Code that I&amp;rsquo;ve shown in these video available on &lt;a href="https://github.com/alkampfergit/GitCoursePublic">GitHub&lt;/a>. I&amp;rsquo;ve also some code that is used in these videos available also on &lt;a href="https://github.com/alkampfergit/GitCoursePublic">GitHub&lt;/a> that also contains a small &lt;a href="https://github.com/alkampfergit/GitCoursePublic/blob/main/wiki/readme.md">Wiki&lt;/a> with some recap on the various commands/concepts explained in the videos.&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>Git Internals&lt;/strong>
+&lt;ul>
+&lt;li>First Command: Hash Object. &lt;a href="https://youtu.be/oSX9XBoZLRk">YouTube Video&lt;/a>&lt;/li>
+&lt;li>More on Hash Object and Cat-File command. &lt;a href="https://youtu.be/KJ34Nw6Pco0">YouTube Video&lt;/a>&lt;/li>
+&lt;li>First Commit &lt;a href="https://youtu.be/1YK2utXGUVA">YouTube Video&lt;/a>&lt;/li>
+&lt;li>Second Commit and more on Git Add &lt;a href="https://youtu.be/pR9FtRYSZ8c">YouTube Video&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;strong>Git Branching&lt;/strong>
+&lt;ul>
+&lt;li>Branch 101: branch is no more than a text file &lt;a href="https://youtu.be/jPqeAOghyTA">YouTube Video&lt;/a>&lt;/li>
+&lt;li>Merge branches: how to merge branch back into main branch &lt;a href="https://youtu.be/7OVa5qsHZVw">YouTube Video&lt;/a>&lt;/li>
+&lt;li>Merge branches: close a branch with rebase strategy &lt;a href="https://youtu.be/ZzLcYH9wjng">YouTube Video&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;strong>Collaborating with git&lt;/strong>
+&lt;ul>
+&lt;li>Remotes - An introduction &lt;a href="https://youtu.be/S0LcsBekjeM">YouTube Video&lt;/a>&lt;/li>
+&lt;li>Remotes - simple two developers colleaboration workflow &lt;a href="https://youtu.be/KfJgrid2MzI">YouTube Video&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;strong>Azure DevOps&lt;/strong>
+&lt;ul>
+&lt;li>How Git connects to your Azure Repositories &lt;a href="https://youtu.be/SmadNFAnQf8">YouTube Video&lt;/a>&lt;/li>
+&lt;li>Use SSH to connect to your Azure DevOps Git repositories &lt;a href="https://youtu.be/kzLJna_aqIM">YouTube Video&lt;/a>&lt;/li>
+&lt;li>Connect from a Linux machine to your Azure DevOps account &lt;a href="https://youtu.be/NRd27LBZwYI">YouTube Video&lt;/a>&lt;/li>
+&lt;li>Index your .NET code thanks to Azure DevOps symbol server &lt;a href="https://youtu.be/XDKLDOfdb0k">YouTube Video&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;strong>GitHub&lt;/strong>
+&lt;ul>
+&lt;li>Perform Security Code Analysis in GitHub with CodeQL and GitHub actions. &lt;a href="https://youtu.be/5x0FXK0rUT0">YouTube Video&lt;/a>&lt;/li>
+&lt;li>How to setup a GitHub Action Workflow to run CodeQL analysis on your code. &lt;a href="https://youtu.be/syNCq7h-CNA">YouTube Video&lt;/a>&lt;/li>
+&lt;li>How to use a Yubikey on Windows to secure your SSH key to connect to GitHub with SSH protocol. &lt;a href="https://youtu.be/vRYkiHBHehI">YouTube Video&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;strong>Miscellaneous tips&lt;/strong>
+&lt;ul>
+&lt;li>Git Log triple dot syntax to quickly compare different commits between two branches. &lt;a href="https://youtu.be/FjH2jo70XRg">YouTube Video&lt;/a>&lt;/li>
+&lt;li>Git log &amp;ndash;pretty-format can be used to dump log in a machine parsable format and create visualization tools &lt;a href="https://youtu.be/fgzINC8pR-A">YouTube Video&lt;/a>
+Happy watching&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul></description></item><item><title>Privacy</title><link>https://www.codewrecks.com/privacy/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://www.codewrecks.com/privacy/</guid><description>&lt;h2 id="list-of-cookies-used-in-this-site">List of Cookies used in this site&lt;/h2>
+&lt;p>&lt;strong>Google Analytics cookies&lt;/strong>: __utma, __utmb, __utmc, __utmv, __utmz, used to gather site statistic usage. You can read more info on Google Policies on: How Google uses data when you use our partners’ sites or apps and Safeguarding your Data.&lt;/p>
+&lt;p>&lt;strong>Google AdSense cookies&lt;/strong>: domain googleads.g.doubleclick.net, TCID, __gads, &lt;em>drt&lt;/em>, id, tc_cj_v2. All of them are third party cookies used to track down ads preference and create targeted ads for the user. You can read more information on Ads on the Digital Advertising Alliance site.&lt;/p></description></item><item><title>YouTube</title><link>https://www.codewrecks.com/youtube/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://www.codewrecks.com/youtube/</guid><description>&lt;h2 id="yubikey">Yubikey&lt;/h2>
+&lt;p>I&amp;rsquo;ve a playlist in which I examine Yubikey usage, from standard passkeys, to use as 2FA with standard TOTP, etc. You can find the channel here.&lt;/p>
+&lt;p>&lt;a href="https://www.youtube.com/playlist?list=PLn9t_BnhwY0KXIqloOys7cCDFSHJycrDl">Yubikey playlist&lt;/a>&lt;/p>
+&lt;h2 id="semantic-kernel-rag-and-other-stuff-about-ai">Semantic Kernel, RAG and other stuff about AI&lt;/h2>
+&lt;p>I&amp;rsquo;ve some video about Semantic Kernel where I&amp;rsquo;m exploring the basic of the library and some practical scenarios&lt;/p>
+&lt;p>&lt;a href="https://www.youtube.com/playlist?list=PLn9t_BnhwY0Ic-0IdTAaQNEwoIdNveYHy">Semantic Kernel Playlist&lt;/a>&lt;/p>
+&lt;p>I&amp;rsquo;ve started &lt;strong>some videos about RAG&lt;/strong>. This is the list of the video you can find on my YouTube Channel.&lt;/p></description></item></channel></rss>
